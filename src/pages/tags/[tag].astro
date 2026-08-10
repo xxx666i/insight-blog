@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagList from '../../components/TagList.astro';
+import { formatDate, getNotes, getPosts, getProjects, uniqueTags } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const [posts, notes, projects] = await Promise.all([getPosts(), getNotes(), getProjects()]);
+  return uniqueTags([...posts, ...notes, ...projects]).map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const [posts, notes, projects] = await Promise.all([getPosts(), getNotes(), getProjects()]);
+const items = [
+  ...posts.filter((item) => item.data.tags.includes(tag)).map((entry) => ({ entry, type: '文章', href: `posts/${entry.id}/`, title: entry.data.title, text: entry.data.description })),
+  ...notes.filter((item) => item.data.tags.includes(tag)).map((entry) => ({ entry, type: '随记', href: `notes/${entry.id}/`, title: entry.data.title ?? '无题随记', text: entry.body ?? '' })),
+  ...projects.filter((item) => item.data.tags.includes(tag)).map((entry) => ({ entry, type: '项目', href: `projects/${entry.id}/`, title: entry.data.title, text: entry.data.summary })),
+].sort((a, b) => b.entry.data.publishedAt.valueOf() - a.entry.data.publishedAt.valueOf());
+const tags = uniqueTags([...posts, ...notes, ...projects]);
+---
+
+<BaseLayout title={`标签：${tag}`} description={`浏览标签“${tag}”下的内容。`}>
+  <div class="page-shell page-main tag-page">
+    <p class="eyebrow">Tag archive</p>
+    <h1 class="page-title">#{tag}</h1>
+    <p class="page-deck">共 {items.length} 条内容。</p>
+    <div class="tag-switcher"><a class="tag all-tags" href={withBase('tags/')}>全部</a><TagList tags={tags} current={tag} /></div>
+    <section class="tag-results" aria-label={`${tag} 标签内容`}>
+      {items.map((item, index) => (
+        <article>
+          <span>{String(index + 1).padStart(2, '0')}</span>
+          <div><p>{item.type} · {formatDate(item.entry.data.publishedAt)}</p><h2><a href={withBase(item.href)}>{item.title}</a></h2><p>{item.text.slice(0, 130)}</p></div>
+          <a href={withBase(item.href)} aria-label={`打开${item.title}`}>↗</a>
+        </article>
+      ))}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-page { max-width: 940px; }
+  .tag-switcher { display: flex; align-items: flex-start; gap: 8px; margin-top: 48px; padding-bottom: 22px; border-bottom: 1px solid var(--ring); }
+  .all-tags { flex: none; }
+  .tag-results article { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 18px; padding: 27px 0; border-bottom: 1px solid var(--ring); }
+  .tag-results article > span { color: var(--n-4); font-family: var(--font-mono); font-size: 9px; }
+  .tag-results article > div > p:first-child { margin: 0; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; }
+  .tag-results h2 { margin: 5px 0; font-family: var(--font-serif); font-size: 22px; font-weight: 500; }
+  .tag-results h2 a { text-decoration: none; }
+  .tag-results article > div > p:last-child { margin: 0; color: var(--n-6); font-size: 13px; }
+  .tag-results article > a { color: var(--n-5); text-decoration: none; }
+</style>

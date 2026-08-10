@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagList from '../../components/TagList.astro';
+import { getNotes, getPosts, getProjects, uniqueTags } from '../../lib/content';
+
+const [posts, notes, projects] = await Promise.all([getPosts(), getNotes(), getProjects()]);
+const all = [...posts, ...notes, ...projects];
+const tags = uniqueTags(all);
+---
+
+<BaseLayout title="标签" description="按标签浏览 DuDuLu 的文章、随记与项目。">
+  <div class="page-shell page-main tags-page">
+    <p class="eyebrow">Browse by subject</p>
+    <h1 class="page-title">标签</h1>
+    <p class="page-deck">一种轻量的索引，不把内容塞进层层分类。</p>
+    <div class="tag-cloud"><TagList tags={tags} /></div>
+  </div>
+</BaseLayout>
+
+<style>.tags-page { max-width: 840px; }.tag-cloud { margin-top: 58px; padding: 30px 0; border-block: 1px solid var(--ring); }.tag-cloud :global(.tag-list) { gap: 12px; }.tag-cloud :global(.tag) { min-height: 36px; padding-inline: 14px; font-size: 13px; }</style>

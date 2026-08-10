@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+---
+
+<BaseLayout title="没有找到页面" noindex>
+  <div class="page-shell page-main not-found">
+    <p class="eyebrow">Error / 404</p>
+    <h1 class="page-title">这里暂时没有内容。</h1>
+    <p>链接可能已经改变，也可能只是多走了一小段路。</p>
+    <a href={withBase('/')}>回到首页 ↗</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found { min-height: 68vh; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+  .not-found > p:not(.eyebrow) { color: var(--n-6); }
+  .not-found > a { margin-top: 20px; color: var(--ume-ink); font-family: var(--font-mono); font-size: 11px; }
+</style>

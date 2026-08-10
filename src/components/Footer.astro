@@ -1,0 +1,24 @@
+---
+import { siteConfig } from '../config';
+import { withBase } from '../lib/url';
+---
+
+<footer class="site-footer">
+  <div class="footer-inner page-shell">
+    <p>© {new Date().getFullYear()} {siteConfig.name}</p>
+    <nav aria-label="页脚导航">
+      {siteConfig.github && <a href={siteConfig.github} rel="me">GitHub</a>}
+      <a href={withBase('rss.xml')}>RSS</a>
+      <a href={withBase('about/')}>关于</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding: 26px 0 42px; border-top: 1px solid var(--ring); color: var(--n-6); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
+  .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .site-footer p { margin: 0; }
+  .site-footer nav { display: flex; gap: 22px; }
+  .site-footer a { text-decoration: none; }
+  .site-footer a:hover { color: var(--ume-ink); }
+</style>

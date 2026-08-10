@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { projectStatus } from '../config';
+import { withBase } from '../lib/url';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index?: number;
+}
+
+const { project, index = 0 } = Astro.props;
+const href = project.data.externalUrl || withBase(`projects/${project.id}/`);
+const external = Boolean(project.data.externalUrl);
+---
+
+<article class="project-item">
+  <span class="project-number" aria-hidden="true">P.{String(index + 1).padStart(2, '0')}</span>
+  <div>
+    <p class="project-status"><span></span>{projectStatus[project.data.status]}</p>
+    <h3><a href={href} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined}>{project.data.title}</a></h3>
+    <p class="project-summary">{project.data.summary}</p>
+    <p class="project-tech">{project.data.technologies.join(' / ')}</p>
+  </div>
+  <a class="project-open" href={href} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined} aria-label={`查看项目 ${project.data.title}`}>↗</a>
+</article>
+
+<style>
+  .project-item { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 18px; min-height: 220px; padding: 24px; border: 1px solid var(--ring); background: color-mix(in srgb, var(--paper-raised) 70%, transparent); transition: border-color 180ms ease, transform 180ms ease, background 180ms ease; }
+  .project-item:hover { border-color: color-mix(in srgb, var(--ume) 45%, var(--ring)); background: var(--paper-raised); transform: translateY(-2px); }
+  .project-number { color: var(--n-4); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; }
+  .project-status { display: flex; align-items: center; gap: 8px; margin: 0 0 28px; color: var(--n-6); font-family: var(--font-mono); font-size: 9px; letter-spacing: .07em; }
+  .project-status span { width: 5px; height: 5px; border-radius: 50%; background: var(--ume); }
+  h3 { margin: 0 0 9px; color: var(--n-10); font-family: var(--font-serif); font-size: 24px; font-weight: 500; line-height: 1.2; }
+  h3 a { text-decoration: none; }
+  .project-summary { max-width: 430px; margin: 0; color: var(--n-6); font-size: 13px; }
+  .project-tech { margin: 22px 0 0; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; }
+  .project-open { color: var(--n-5); text-decoration: none; }
+  .project-item:hover .project-open { color: var(--ume); }
+  @media (max-width: 520px) {
+    .project-item { grid-template-columns: minmax(0, 1fr) auto; min-height: 200px; }
+    .project-number { display: none; }
+  }
+</style>

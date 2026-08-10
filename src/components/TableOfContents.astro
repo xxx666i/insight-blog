@@ -1,0 +1,66 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  variant?: 'desktop' | 'mobile';
+}
+
+const items = Astro.props.headings.filter((heading) => heading.depth === 2 && heading.text !== 'Footnotes');
+const variant = Astro.props.variant ?? 'desktop';
+---
+
+{variant === 'desktop' ? (
+  <aside class="toc" aria-label="文章目录">
+    <p class="toc-label">ON THIS PAGE</p>
+    <ol>
+      {items.map((heading, index) => (
+        <li><a href={`#${heading.slug}`} data-toc-link={heading.slug}><span>{String(index + 1).padStart(2, '0')}</span>{heading.text}</a></li>
+      ))}
+    </ol>
+  </aside>
+) : (
+  <details class="toc-mobile">
+    <summary>文章目录 <span>{String(items.length).padStart(2, '0')}</span></summary>
+    <ol>
+      {items.map((heading, index) => (
+        <li><a href={`#${heading.slug}`}><span>{String(index + 1).padStart(2, '0')}</span>{heading.text}</a></li>
+      ))}
+    </ol>
+  </details>
+)}
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  const headings = links.map((link) => document.getElementById(link.dataset.tocLink || '')).filter(Boolean) as HTMLElement[];
+  if (headings.length) {
+    const setActive = (id: string) => links.forEach((link) => link.toggleAttribute('aria-current', link.dataset.tocLink === id));
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]?.target.id) setActive(visible[0].target.id);
+    }, { rootMargin: '-18% 0px -70% 0px' });
+    headings.forEach((heading) => observer.observe(heading));
+    setActive(headings[0].id);
+  }
+</script>
+
+<style>
+  .toc { position: sticky; top: calc(var(--header-height) + 32px); align-self: start; max-height: calc(100vh - var(--header-height) - 64px); padding-left: 24px; overflow: auto; border-left: 1px solid var(--ring); }
+  .toc-label { margin: 0 0 18px; color: var(--n-4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .12em; }
+  ol { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
+  a { display: grid; grid-template-columns: 25px minmax(0, 1fr); gap: 7px; color: var(--n-5); font-size: 11px; line-height: 1.5; text-decoration: none; transition: color 140ms ease; }
+  a span { color: var(--n-4); font-family: var(--font-mono); font-size: 8px; }
+  a:hover, a[aria-current] { color: var(--n-9); }
+  a[aria-current] span { color: var(--ume); }
+  .toc-mobile { margin: 0 0 38px; border-block: 1px solid var(--ring); }
+  .toc-mobile summary { display: flex; justify-content: space-between; padding: 13px 0; font-family: var(--font-mono); font-size: 10px; cursor: pointer; }
+  .toc-mobile summary span { color: var(--ume); }
+  .toc-mobile ol { padding: 4px 0 18px; }
+  @media (max-width: 980px) {
+    .toc { display: none; }
+  }
+</style>

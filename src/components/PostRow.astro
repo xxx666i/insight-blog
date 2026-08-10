@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../lib/content';
+import { withBase } from '../lib/url';
+import TagList from './TagList.astro';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  index?: number;
+}
+
+const { post, index } = Astro.props;
+---
+
+<article class="post-row">
+  {index !== undefined && <span class="row-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>}
+  <div class="post-main">
+    <div class="meta-row">
+      <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+      {post.data.draft && <span class="draft-mark">草稿</span>}
+    </div>
+    <h3><a href={withBase(`posts/${post.id}/`)}>{post.data.title}</a></h3>
+    <p>{post.data.description}</p>
+    <TagList tags={post.data.tags} />
+  </div>
+  <a class="row-arrow" href={withBase(`posts/${post.id}/`)} aria-label={`阅读《${post.data.title}》`}>↗</a>
+</article>
+
+<style>
+  .post-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 18px; padding: 28px 0 30px; border-bottom: 1px solid var(--ring); }
+  .row-index { padding-top: 5px; color: var(--n-4); font-family: var(--font-mono); font-size: 10px; }
+  .post-main h3 { margin: 8px 0 7px; color: var(--n-10); font-family: var(--font-serif); font-size: clamp(21px, 3vw, 29px); font-weight: 500; line-height: 1.25; letter-spacing: -.02em; }
+  .post-main h3 a { text-decoration: none; background: linear-gradient(var(--ume), var(--ume)) 0 100% / 0 1px no-repeat; transition: background-size 220ms ease; }
+  .post-row:hover h3 a { background-size: 100% 1px; }
+  .post-main > p { max-width: 660px; margin: 0 0 15px; color: var(--n-6); font-size: 14px; }
+  .row-arrow { align-self: center; width: 34px; height: 34px; color: var(--n-5); font-family: var(--font-mono); font-size: 16px; text-align: center; text-decoration: none; transition: color 160ms ease, transform 160ms ease; }
+  .post-row:hover .row-arrow { color: var(--ume); transform: translate(2px, -2px); }
+  .draft-mark { color: var(--ume-ink); }
+  @media (max-width: 560px) {
+    .post-row { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+    .row-index { display: none; }
+  }
+</style>

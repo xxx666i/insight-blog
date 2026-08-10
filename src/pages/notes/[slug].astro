@@ -1,0 +1,30 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { formatDate } from '../../lib/content';
+import { getNotes } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+interface Props { note: CollectionEntry<'notes'> }
+const { note } = Astro.props;
+const { Content } = await render(note);
+const displayTitle = note.data.title ?? `随记 · ${formatDate(note.data.publishedAt)}`;
+---
+
+<ArticleLayout
+  title={displayTitle}
+  kind="随记"
+  backHref="notes/"
+  publishedAt={note.data.publishedAt}
+  tags={note.data.tags}
+  image={withBase(`og/note-${note.id}.png`)}
+  draft={note.data.draft}
+  showTitle={Boolean(note.data.title)}
+>
+  <Content />
+</ArticleLayout>

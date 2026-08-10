@@ -1,0 +1,116 @@
+---
+import { withBase } from '../lib/url';
+---
+
+<dialog class="search-dialog" aria-labelledby="search-title" data-index-url={withBase('search-index.json')}>
+  <div class="search-panel">
+    <div class="search-topline">
+      <span class="search-mark" aria-hidden="true">⌕</span>
+      <h2 id="search-title">搜索档案</h2>
+      <button class="search-close" type="button" aria-label="关闭搜索">ESC</button>
+    </div>
+    <label class="search-field">
+      <span class="sr-only">搜索文章、随记与项目</span>
+      <input type="search" placeholder="输入标题、正文或标签…" autocomplete="off" />
+    </label>
+    <p class="search-status" aria-live="polite">输入关键词开始搜索</p>
+    <ol class="search-results"></ol>
+    <p class="search-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择　<kbd>Enter</kbd> 打开　<kbd>Esc</kbd> 关闭</p>
+  </div>
+</dialog>
+
+<script>
+  type SearchItem = { type: string; title: string; date: string; url: string; tags: string[]; text: string };
+  const dialog = document.querySelector<HTMLDialogElement>('.search-dialog');
+  const input = dialog?.querySelector<HTMLInputElement>('input');
+  const results = dialog?.querySelector<HTMLOListElement>('.search-results');
+  const status = dialog?.querySelector<HTMLElement>('.search-status');
+  let index: SearchItem[] | null = null;
+  let active = -1;
+
+  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+  })[char] || char);
+
+  async function loadIndex() {
+    if (index || !dialog) return;
+    const response = await fetch(dialog.dataset.indexUrl || 'search-index.json');
+    index = await response.json();
+  }
+
+  async function openSearch() {
+    if (!dialog) return;
+    dialog.showModal();
+    await loadIndex();
+    input?.focus();
+  }
+
+  function closeSearch() {
+    dialog?.close();
+  }
+
+  function render(query: string) {
+    if (!results || !status || !index) return;
+    const terms = query.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    active = -1;
+    if (!terms.length) {
+      results.innerHTML = '';
+      status.textContent = '输入关键词开始搜索';
+      return;
+    }
+
+    const matches = index.map((item) => {
+      const title = item.title.toLocaleLowerCase();
+      const tags = item.tags.join(' ').toLocaleLowerCase();
+      const text = item.text.toLocaleLowerCase();
+      const score = terms.reduce((sum, term) => sum + (title.includes(term) ? 8 : 0) + (tags.includes(term) ? 4 : 0) + (text.includes(term) ? 1 : 0), 0);
+      return { item, score };
+    }).filter(({ score }) => score > 0).sort((a, b) => b.score - a.score).slice(0, 12);
+
+    status.textContent = matches.length ? `找到 ${matches.length} 条结果` : '没有找到匹配内容';
+    results.innerHTML = matches.map(({ item }) => {
+      const label = item.type === 'post' ? '文章' : item.type === 'note' ? '随记' : '项目';
+      return `<li><a href="${escapeHtml(item.url)}"><span class="result-meta">${label} · ${escapeHtml(item.date)}</span><strong>${escapeHtml(item.title)}</strong><span class="result-text">${escapeHtml(item.text.slice(0, 92))}${item.text.length > 92 ? '…' : ''}</span></a></li>`;
+    }).join('');
+  }
+
+  document.querySelector('.search-trigger')?.addEventListener('click', openSearch);
+  dialog?.querySelector('.search-close')?.addEventListener('click', closeSearch);
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) closeSearch(); });
+  input?.addEventListener('input', () => render(input.value.trim()));
+  document.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      openSearch();
+      return;
+    }
+    if (!dialog?.open || !results) return;
+    const links = [...results.querySelectorAll<HTMLAnchorElement>('a')];
+    if (event.key === 'Escape') closeSearch();
+    if (event.key === 'ArrowDown' && links.length) { event.preventDefault(); active = (active + 1) % links.length; links[active].focus(); }
+    if (event.key === 'ArrowUp' && links.length) { event.preventDefault(); active = (active - 1 + links.length) % links.length; links[active].focus(); }
+  });
+</script>
+
+<style>
+  .search-dialog { width: min(calc(100% - 28px), 680px); max-height: min(76vh, 680px); padding: 0; border: 1px solid var(--ring); border-radius: 14px; color: var(--n-9); background: var(--paper-raised); box-shadow: 0 28px 90px rgba(24, 18, 15, .26); }
+  .search-dialog::backdrop { background: rgba(20, 17, 15, .42); backdrop-filter: blur(4px); }
+  .search-panel { padding: 24px; }
+  .search-topline { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .search-mark { color: var(--ume); font-size: 24px; }
+  .search-topline h2 { margin: 0 auto 0 0; font-family: var(--font-serif); font-size: 20px; font-weight: 500; }
+  .search-close { padding: 4px 7px; border: 1px solid var(--ring); border-radius: 4px; color: var(--n-6); background: transparent; font-family: var(--font-mono); font-size: 9px; cursor: pointer; }
+  .search-field input { width: 100%; padding: 16px 0; border: 0; border-block: 1px solid var(--ring); outline: 0; color: var(--n-10); background: transparent; font-family: var(--font-serif); font-size: clamp(20px, 4vw, 29px); }
+  .search-field input::placeholder { color: var(--n-4); }
+  .search-status { margin: 13px 0 8px; color: var(--n-5); font-family: var(--font-mono); font-size: 10px; }
+  .search-results { max-height: 390px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+  .search-results li + li { border-top: 1px solid var(--ring); }
+  .search-results a { display: grid; gap: 2px; padding: 13px 8px; border-radius: 6px; text-decoration: none; }
+  .search-results a:hover, .search-results a:focus { background: var(--n-1); outline-offset: -2px; }
+  .result-meta { color: var(--ume-ink); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; }
+  .search-results strong { font-family: var(--font-serif); font-size: 17px; font-weight: 500; }
+  .result-text { color: var(--n-6); font-size: 12px; }
+  .search-hint { margin: 16px 0 0; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; text-align: center; }
+  kbd { padding: 1px 4px; border: 1px solid var(--ring); border-radius: 3px; background: var(--n-1); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>

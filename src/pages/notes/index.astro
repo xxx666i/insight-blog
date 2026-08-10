@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NoteItem from '../../components/NoteItem.astro';
+import { getNotes } from '../../lib/content';
+
+const notes = await getNotes();
+---
+
+<BaseLayout title="随记" description="DuDuLu 的短记、片段与即时观察。">
+  <div class="page-shell page-main notes-page">
+    <header data-enter>
+      <p class="eyebrow">Notes in passing</p>
+      <h1 class="page-title">随记</h1>
+      <p class="page-deck">不必都长成一篇文章。这里保存那些正在发生、值得留下的片段。</p>
+    </header>
+    <div class="notes-rule"><span>{String(notes.length).padStart(2, '0')} ENTRIES</span></div>
+    <section aria-label="全部随记">
+      {notes.map((note) => <NoteItem note={note} />)}
+      {!notes.length && <p class="empty-state">还没有公开随记。</p>}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .notes-page > header { max-width: 720px; }
+  .notes-rule { display: flex; justify-content: flex-end; margin-top: 54px; padding-bottom: 12px; border-bottom: 1px solid var(--ring); color: var(--n-4); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; }
+</style>

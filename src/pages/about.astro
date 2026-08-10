@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config';
+---
+
+<BaseLayout title="关于" description={`关于 ${siteConfig.name}。`}>
+  <div class="page-shell page-main about-page">
+    <header class="about-header" data-enter>
+      <div class="avatar-large" aria-label="头像预留位置">
+        {siteConfig.avatar ? <img src={siteConfig.avatar} alt="DuDuLu 的头像" /> : <span>D<span>.</span></span>}
+      </div>
+      <div>
+        <p class="eyebrow">About this place</p>
+        <h1 class="page-title">关于</h1>
+        <p class="about-intro">{siteConfig.about.intro}</p>
+      </div>
+    </header>
+    <div class="about-grid">
+      <section>
+        <p class="section-number">01</p>
+        <h2>现在关注</h2>
+        <ul>{siteConfig.about.interests.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section>
+        <p class="section-number">02</p>
+        <h2>做事原则</h2>
+        <ol>{siteConfig.about.principles.map((item) => <li>{item}</li>)}</ol>
+      </section>
+      {siteConfig.about.contact && (
+        <section>
+          <p class="section-number">03</p>
+          <h2>联系</h2>
+          <p><a href={`mailto:${siteConfig.about.contact}`}>{siteConfig.about.contact}</a></p>
+        </section>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page { max-width: 980px; }
+  .about-header { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: clamp(40px, 8vw, 100px); align-items: start; padding-bottom: 70px; border-bottom: 1px solid var(--ring); }
+  .avatar-large { display: grid; width: 150px; aspect-ratio: 1; place-items: center; border: 1px solid var(--ring); border-radius: 50%; background: var(--n-1); }
+  .avatar-large > span { color: var(--n-5); font-family: var(--font-serif); font-size: 52px; }
+  .avatar-large > span span { color: var(--ume); }
+  .avatar-large img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+  .about-intro { max-width: 600px; margin: 30px 0 0; color: var(--n-7); font-family: var(--font-serif); font-size: clamp(19px, 2.5vw, 25px); line-height: 1.9; }
+  .about-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin-top: 70px; background: var(--ring); border: 1px solid var(--ring); }
+  .about-grid section { min-height: 260px; padding: 32px; background: var(--paper); }
+  .section-number { margin: 0 0 44px; color: var(--ume); font-family: var(--font-mono); font-size: 10px; }
+  .about-grid h2 { margin: 0 0 20px; font-family: var(--font-serif); font-size: 25px; font-weight: 500; }
+  .about-grid ul, .about-grid ol { display: grid; gap: 10px; margin: 0; padding-left: 1.2em; color: var(--n-7); }
+  .about-grid li::marker { color: var(--ume); font-family: var(--font-mono); font-size: 10px; }
+  @media (max-width: 660px) {
+    .about-header { grid-template-columns: 1fr; }
+    .avatar-large { width: 88px; }
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>

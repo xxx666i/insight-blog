@@ -1,0 +1,76 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import Callout from '../../components/Callout.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getPosts, readingMinutes, relatedPosts } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props { post: CollectionEntry<'posts'> }
+const { post } = Astro.props;
+const posts = await getPosts();
+const { Content, headings } = await render(post);
+const index = posts.findIndex((item) => item.id === post.id);
+const newer = index > 0 ? posts[index - 1] : undefined;
+const older = index < posts.length - 1 ? posts[index + 1] : undefined;
+const related = relatedPosts(post, posts);
+---
+
+<ArticleLayout
+  title={post.data.title}
+  description={post.data.description}
+  kind="文章"
+  backHref="posts/"
+  publishedAt={post.data.publishedAt}
+  updatedAt={post.data.updatedAt}
+  tags={post.data.tags}
+  headings={headings}
+  readingTime={readingMinutes(post.body)}
+  image={withBase(`og/post-${post.id}.png`)}
+  math={post.data.math}
+  mermaid={post.data.mermaid}
+  draft={post.data.draft}
+>
+  <Content components={{ Callout }} />
+
+  <Fragment slot="after">
+    <footer class="post-footer page-shell">
+      {post.data.codeLicense && <p class="code-license">本文代码示例许可：{post.data.codeLicense}</p>}
+      {(newer || older) && (
+        <nav class="post-pagination" aria-label="相邻文章">
+          <div>
+            {newer && <><span>上一篇</span><a href={withBase(`posts/${newer.id}/`)}>{newer.data.title}</a></>}
+          </div>
+          <div class="next-post">
+            {older && <><span>下一篇</span><a href={withBase(`posts/${older.id}/`)}>{older.data.title}</a></>}
+          </div>
+        </nav>
+      )}
+      {related.length > 0 && (
+        <section class="related" aria-labelledby="related-title">
+          <div class="section-heading"><h2 id="related-title" class="section-title">继续阅读</h2><span>BY SHARED TAGS</span></div>
+          {related.map((item, relatedIndex) => <PostRow post={item} index={relatedIndex} />)}
+        </section>
+      )}
+    </footer>
+  </Fragment>
+</ArticleLayout>
+
+<style>
+  .post-footer { max-width: 960px; margin-top: 82px; }
+  .code-license { padding: 13px 0; border-block: 1px solid var(--ring); color: var(--n-5); font-family: var(--font-mono); font-size: 10px; }
+  .post-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 56px; background: var(--ring); border: 1px solid var(--ring); }
+  .post-pagination > div { min-height: 136px; padding: 24px; background: var(--paper); }
+  .post-pagination span { display: block; margin-bottom: 20px; color: var(--n-4); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; }
+  .post-pagination a { display: inline; color: var(--n-9); font-family: var(--font-serif); font-size: 18px; line-height: 1.5; text-decoration-color: transparent; }
+  .post-pagination a:hover { color: var(--ume-ink); text-decoration-color: var(--ume); }
+  .next-post { text-align: right; }
+  .related { margin-top: 84px; }
+  .related .section-heading > span { color: var(--n-4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .08em; }
+  @media (max-width: 600px) { .post-pagination { grid-template-columns: 1fr; } .next-post { text-align: left; } }
+</style>

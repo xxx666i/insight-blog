@@ -1,0 +1,53 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { projectStatus } from '../../config';
+import { getProjects } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+interface Props { project: CollectionEntry<'projects'> }
+const { project } = Astro.props;
+const { Content, headings } = await render(project);
+---
+
+<ArticleLayout
+  title={project.data.title}
+  description={project.data.summary}
+  kind="项目"
+  backHref="projects/"
+  publishedAt={project.data.publishedAt}
+  tags={project.data.tags}
+  headings={headings}
+  image={withBase(`og/project-${project.id}.png`)}
+  draft={project.data.draft}
+>
+  <dl class="project-facts">
+    <div><dt>状态</dt><dd>{projectStatus[project.data.status]}</dd></div>
+    {project.data.period && <div><dt>周期</dt><dd>{project.data.period}</dd></div>}
+    {project.data.role && <div><dt>角色</dt><dd>{project.data.role}</dd></div>}
+    {project.data.technologies.length > 0 && <div><dt>技术</dt><dd>{project.data.technologies.join(' / ')}</dd></div>}
+  </dl>
+  <Content />
+  {(project.data.externalUrl || project.data.sourceUrl) && (
+    <div class="project-links">
+      {project.data.externalUrl && <a href={project.data.externalUrl} target="_blank" rel="noreferrer">访问项目 ↗</a>}
+      {project.data.sourceUrl && <a href={project.data.sourceUrl} target="_blank" rel="noreferrer">查看源码 ↗</a>}
+    </div>
+  )}
+</ArticleLayout>
+
+<style>
+  .project-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0 0 3em; padding: 1px; background: var(--ring); font-family: var(--font-sans); }
+  .project-facts div { padding: 14px 16px; background: var(--paper); }
+  .project-facts dt { color: var(--n-5); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; }
+  .project-facts dd { margin: 4px 0 0; color: var(--n-9); font-size: 13px; }
+  .project-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--ring); }
+  .project-links a { padding: 8px 13px; border: 1px solid var(--ring); color: var(--n-8); font-family: var(--font-sans); font-size: 12px; text-decoration: none; }
+  .project-links a:hover { border-color: var(--ume); color: var(--ume-ink); }
+  @media (max-width: 520px) { .project-facts { grid-template-columns: 1fr; } }
+</style>
