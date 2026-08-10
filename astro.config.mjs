@@ -17,7 +17,7 @@ import {
 const githubRepository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/learningDemo';
 const [githubOwner, githubRepo] = githubRepository.split('/');
 const customSite = process.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
-const isGithubPages = process.env.GITHUB_ACTIONS === 'true' && !customSite;
+const isGithubPages = process.env.DUDULU_PAGES_BUILD === 'true' && !customSite;
 
 const codeMetaTransformer = {
   name: 'dudulu:code-meta',

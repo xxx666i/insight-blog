@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 const env = {
   ...process.env,
   ASTRO_TELEMETRY_DISABLED: '1',
-  GITHUB_ACTIONS: 'true',
+  DUDULU_PAGES_BUILD: 'true',
   GITHUB_REPOSITORY: 'xxx666i/learningDemo',
 };
 
