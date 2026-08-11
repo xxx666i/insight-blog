@@ -14,15 +14,15 @@ import {
   transformerNotationHighlight,
 } from '@shikijs/transformers';
 
-const githubRepository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/xxx666i.github.io';
+const githubRepository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/insight-blog';
 const [githubOwner, githubRepo] = githubRepository.split('/');
 const customSite = process.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
-const isGithubPages = process.env.DUDULU_PAGES_BUILD === 'true' && !customSite;
+const isGithubPages = process.env.INSIGHT_BLOG_PAGES_BUILD === 'true' && !customSite;
 const isGithubUserSite = githubRepo.toLowerCase() === `${githubOwner}.github.io`.toLowerCase();
 const githubPagesBase = isGithubUserSite ? '/' : `/${githubRepo}`;
 
 const codeMetaTransformer = {
-  name: 'dudulu:code-meta',
+  name: 'insight-blog:code-meta',
   pre(node) {
     const raw = this.options.meta?.__raw ?? '';
     if (!raw) return;

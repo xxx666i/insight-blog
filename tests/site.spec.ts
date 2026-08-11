@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test('首页按编辑顺序呈现核心内容', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/DuDuLu/);
-  await expect(page.getByRole('heading', { level: 1, name: /DuDuLu/ })).toBeVisible();
+  await expect(page).toHaveTitle(/Insight Blog/);
+  await expect(page.getByRole('heading', { level: 1, name: /Insight Blog/ })).toBeVisible();
   await expect(page.getByText('写代码，也记录代码之外的事。')).toBeVisible();
   await expect(page.getByLabel('头像预留位置')).toBeVisible();
 
@@ -31,13 +31,13 @@ test('快捷键搜索覆盖文章、随记和项目', async ({ page }) => {
   await expect(dialog).toBeVisible();
   await dialog.getByRole('searchbox').fill('Astro');
   await expect(dialog.getByText(/找到 \d+ 条结果/)).toBeVisible();
-  await expect(dialog.getByRole('link', { name: /欢迎来到 DuDuLu/ })).toBeVisible();
-  await expect(dialog.getByRole('link', { name: /DuDuLu 个人档案/ })).toBeVisible();
+  await expect(dialog.getByRole('link', { name: /欢迎来到 Insight Blog/ })).toBeVisible();
+  await expect(dialog.getByRole('link', { name: /Insight Blog 个人档案/ })).toBeVisible();
 });
 
 test('长文章提供目录、代码操作和扩展内容', async ({ page, isMobile }) => {
   await page.goto('/posts/welcome/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('欢迎来到 DuDuLu 的新档案');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('欢迎来到 Insight Blog');
   if (isMobile) {
     await expect(page.locator('details.toc-mobile')).toBeVisible();
   } else {
@@ -54,7 +54,7 @@ test('归档路由与无题随记保持可访问', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/随记/);
   await expect(page.getByText('安静的界面并不等于没有性格')).toBeVisible();
   await page.goto('/projects/personal-archive/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('DuDuLu 个人档案');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Insight Blog 个人档案');
   await expect(page.getByText('进行中')).toBeVisible();
 });
 

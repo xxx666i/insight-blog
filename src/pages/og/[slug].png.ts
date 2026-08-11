@@ -75,8 +75,8 @@ export const GET: APIRoute<OgProps> = async ({ props }) => {
       <div style="display:flex;font-size:64px;line-height:1.35;letter-spacing:-2px;font-weight:500;">${props.title}</div>
       <div style="display:flex;margin-top:24px;width:760px;font-size:23px;line-height:1.65;color:#756d65;">${props.description}</div>
     </div>
-    <div style="display:flex;position:absolute;left:76px;bottom:54px;align-items:center;font-size:23px;">DuDuLu<span style="display:flex;width:8px;height:8px;margin:0 0 13px 5px;border-radius:999px;background:#b85869;"></span></div>
-    <div style="display:flex;position:absolute;right:76px;bottom:58px;font-family:monospace;font-size:13px;letter-spacing:2px;color:#938a80;">DUDULU / ARCHIVE</div>
+    <div style="display:flex;position:absolute;left:76px;bottom:54px;align-items:center;font-size:23px;">Xiaoxin<span style="display:flex;width:8px;height:8px;margin:0 0 13px 5px;border-radius:999px;background:#b85869;"></span></div>
+    <div style="display:flex;position:absolute;right:76px;bottom:58px;font-family:monospace;font-size:13px;letter-spacing:2px;color:#938a80;">INSIGHT BLOG / ARCHIVE</div>
   </div>`;
 
   const svg = await satori(markup as never, {

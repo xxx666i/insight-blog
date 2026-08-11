@@ -7,7 +7,7 @@ import { siteConfig } from '../config';
   <div class="page-shell page-main about-page">
     <header class="about-header" data-enter>
       <div class="avatar-large" aria-label="头像预留位置">
-        {siteConfig.avatar ? <img src={siteConfig.avatar} alt="DuDuLu 的头像" /> : <span>D<span>.</span></span>}
+        {siteConfig.avatar ? <img src={siteConfig.avatar} alt={`${siteConfig.author} 的头像`} /> : <span>X<span>.</span></span>}
       </div>
       <div>
         <p class="eyebrow">About this place</p>

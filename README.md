@@ -1,6 +1,6 @@
-# DuDuLu
+# Insight Blog
 
-DuDuLu 的 Git 驱动个人网站。使用 Astro Content Collections 管理文章、随记和项目，静态生成后部署到 GitHub Pages。
+Xiaoxin 的 Git 驱动个人博客。使用 Astro Content Collections 管理文章、随记和项目，静态生成后部署到 GitHub Pages。
 
 ## 本地开发
 
@@ -47,7 +47,7 @@ Mermaid 和数学公式需在文章 frontmatter 中分别启用 `mermaid: true`�
 
 仓库内的 `.github/workflows/deploy.yml` 提供完整的 GitHub Actions 工作流。Pull Request 会运行检查与浏览器验收；合并或推送到 `main` 后，会再次验证并部署到 GitHub Pages。
 
-如使用自定义域名，在仓库环境中设置 `PUBLIC_SITE_URL=https://你的域名`。未设置时，网站地址为 `https://xxx666i.github.io/`。
+如使用自定义域名，在仓库环境中设置 `PUBLIC_SITE_URL=https://你的域名`。未设置时，网站地址为 `https://xxx666i.github.io/insight-blog/`。
 
 ## 版权
 
