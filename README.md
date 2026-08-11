@@ -15,7 +15,7 @@ npm run dev
 npm run check       # Astro 与 TypeScript
 npm run build       # 生产构建
 npm run test        # 类型、构建、路由和浏览器验收
-npm run test:pages  # 以 /learningDemo 基路径验证 GitHub Pages 构建
+npm run test:pages  # 验证 GitHub Pages 构建路径
 ```
 
 ## 写内容
@@ -45,9 +45,9 @@ Mermaid 和数学公式需在文章 frontmatter 中分别启用 `mermaid: true`�
 
 ## 部署
 
-父仓库根目录的 `.github/workflows/deploy-dudulu.yml` 已启用完整的 GitHub Actions 工作流，项目路径为 `./insight`；`deployment/deploy-dudulu.yml` 保留为项目内模板。推送到 `main` 后会先运行检查与浏览器验收，再部署到 GitHub Pages。
+仓库内的 `.github/workflows/deploy.yml` 提供完整的 GitHub Actions 工作流。Pull Request 会运行检查与浏览器验收；合并或推送到 `main` 后，会再次验证并部署到 GitHub Pages。
 
-如使用自定义域名，在仓库环境中设置 `PUBLIC_SITE_URL=https://你的域名`。未设置时，构建会自动使用 `https://xxx666i.github.io/learningDemo/`。
+如使用自定义域名，在仓库环境中设置 `PUBLIC_SITE_URL=https://你的域名`。未设置时，网站地址为 `https://xxx666i.github.io/`。
 
 ## 版权
 

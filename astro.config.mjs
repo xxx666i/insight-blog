@@ -14,10 +14,12 @@ import {
   transformerNotationHighlight,
 } from '@shikijs/transformers';
 
-const githubRepository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/learningDemo';
+const githubRepository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/xxx666i.github.io';
 const [githubOwner, githubRepo] = githubRepository.split('/');
 const customSite = process.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
 const isGithubPages = process.env.DUDULU_PAGES_BUILD === 'true' && !customSite;
+const isGithubUserSite = githubRepo.toLowerCase() === `${githubOwner}.github.io`.toLowerCase();
+const githubPagesBase = isGithubUserSite ? '/' : `/${githubRepo}`;
 
 const codeMetaTransformer = {
   name: 'dudulu:code-meta',
@@ -43,7 +45,7 @@ const codeMetaTransformer = {
 
 export default defineConfig({
   site: customSite ?? `https://${githubOwner}.github.io`,
-  base: isGithubPages ? `/${githubRepo}` : '/',
+  base: isGithubPages ? githubPagesBase : '/',
   trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
   markdown: {
