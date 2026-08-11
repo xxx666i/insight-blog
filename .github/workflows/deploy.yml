@@ -3,9 +3,8 @@ name: Deploy DuDuLu to GitHub Pages
 on:
   push:
     branches: [main]
-    paths:
-      - 'insight/**'
-      - '.github/workflows/deploy-dudulu.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,9 +19,6 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: insight
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -31,30 +27,34 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: insight/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Type and production checks
         run: npm test
-      - name: Verify GitHub Pages base path
+      - name: Verify GitHub Pages build path
         run: npm run test:pages
 
   build:
+    if: github.event_name != 'pull_request'
     needs: verify
     runs-on: ubuntu-latest
+    env:
+      DUDULU_PAGES_BUILD: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Build and upload site
         uses: withastro/action@v6
         with:
-          path: ./insight
+          path: ./
           node-version: 24
           package-manager: npm@11.6.2
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

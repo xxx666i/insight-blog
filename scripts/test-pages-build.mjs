@@ -1,10 +1,15 @@
 import { spawnSync } from 'node:child_process';
 
+const repository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/xxx666i.github.io';
+const [owner, repositoryName] = repository.split('/');
+const isUserSite = repositoryName.toLowerCase() === `${owner}.github.io`.toLowerCase();
+const expectedBase = isUserSite ? '/' : `/${repositoryName}`;
+
 const env = {
   ...process.env,
   ASTRO_TELEMETRY_DISABLED: '1',
   DUDULU_PAGES_BUILD: 'true',
-  GITHUB_REPOSITORY: 'xxx666i/learningDemo',
+  GITHUB_REPOSITORY: repository,
 };
 
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -14,7 +19,7 @@ if (build.status !== 0) process.exit(build.status ?? 1);
 
 const audit = spawnSync(process.execPath, ['scripts/audit-build.mjs'], {
   stdio: 'inherit',
-  env: { ...env, EXPECTED_BASE: '/learningDemo' },
+  env: { ...env, EXPECTED_BASE: expectedBase },
 });
 if (audit.error) console.error(audit.error);
 process.exit(audit.status ?? 1);
