@@ -1,7 +1,7 @@
 {
-  "name": "dudulu-site",
+  "name": "insight-blog",
   "version": "0.1.0",
-  "description": "DuDuLu 的 Git 驱动 Astro 个人网站",
+  "description": "Xiaoxin 的 Git 驱动 Astro 个人博客",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
     "blog",
     "personal-site"
   ],
-  "author": "DuDuLu",
+  "author": "Xiaoxin",
   "license": "UNLICENSED",
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.0",

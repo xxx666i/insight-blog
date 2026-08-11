@@ -20,13 +20,13 @@ const selectedProjects = projects.filter((project) => project.data.featured).sli
       </div>
       <div class="hero-copy" data-enter style="--enter-index: 1">
         <p class="eyebrow">Personal archive</p>
-        <h1 id="hero-title" class="display-title">DuDuLu<span class="title-dot">.</span></h1>
+        <h1 id="hero-title" class="display-title">{siteConfig.name}<span class="title-dot">.</span></h1>
         <p class="hero-subtitle">{siteConfig.subtitle}</p>
         <p class="hero-note">以文章保存完整的思考，以随记留下正在发生的片段，也用项目记录一次次把想法做成东西的过程。</p>
       </div>
       <div class="avatar-column" data-enter style="--enter-index: 2">
         <div class="avatar-slot" aria-label="头像预留位置">
-          {siteConfig.avatar ? <img src={siteConfig.avatar} alt="DuDuLu 的头像" /> : <span>头像<br />待更新</span>}
+          {siteConfig.avatar ? <img src={siteConfig.avatar} alt={`${siteConfig.author} 的头像`} /> : <span>头像<br />待更新</span>}
         </div>
         <span class="avatar-caption">PORTRAIT / RESERVED</span>
       </div>

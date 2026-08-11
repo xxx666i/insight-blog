@@ -5,7 +5,7 @@ import { withBase } from '../lib/url';
 
 <footer class="site-footer">
   <div class="footer-inner page-shell">
-    <p>© {new Date().getFullYear()} {siteConfig.name}</p>
+    <p>© {new Date().getFullYear()} {siteConfig.author}</p>
     <nav aria-label="页脚导航">
       {siteConfig.github && <a href={siteConfig.github} rel="me">GitHub</a>}
       <a href={withBase('rss.xml')}>RSS</a>

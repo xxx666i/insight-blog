@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
-const repository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/xxx666i.github.io';
+const repository = process.env.GITHUB_REPOSITORY ?? 'xxx666i/insight-blog';
 const [owner, repositoryName] = repository.split('/');
 const isUserSite = repositoryName.toLowerCase() === `${owner}.github.io`.toLowerCase();
 const expectedBase = isUserSite ? '/' : `/${repositoryName}`;
@@ -8,7 +8,7 @@ const expectedBase = isUserSite ? '/' : `/${repositoryName}`;
 const env = {
   ...process.env,
   ASTRO_TELEMETRY_DISABLED: '1',
-  DUDULU_PAGES_BUILD: 'true',
+  INSIGHT_BLOG_PAGES_BUILD: 'true',
   GITHUB_REPOSITORY: repository,
 };
 

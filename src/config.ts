@@ -1,13 +1,13 @@
 export const siteConfig = {
-  name: 'DuDuLu',
+  name: 'Insight Blog',
   subtitle: '写代码，也记录代码之外的事。',
-  description: 'DuDuLu 的个人写作、随记与项目档案。',
+  description: 'Xiaoxin 的个人写作、随记与项目档案。',
   lang: 'zh-CN',
-  author: 'DuDuLu',
-  github: '',
+  author: 'Xiaoxin',
+  github: 'https://github.com/xxx666i/insight-blog',
   avatar: '',
   about: {
-    intro: '这里是 DuDuLu 的长期个人档案。文章、短记和项目都通过 Git 留下清晰的版本与上下文。',
+    intro: '这里是 Xiaoxin 的长期个人档案。文章、短记和项目都通过 Git 留下清晰的版本与上下文。',
     interests: ['软件与工具', '写作与知识整理', '日常观察'],
     principles: ['先把问题说清楚', '让作品经得起时间', '保留好奇，也保留余白'],
     contact: '',

@@ -1,4 +1,4 @@
-name: Deploy DuDuLu to GitHub Pages
+name: Deploy Insight Blog to GitHub Pages
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     env:
-      DUDULU_PAGES_BUILD: 'true'
+      INSIGHT_BLOG_PAGES_BUILD: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v7

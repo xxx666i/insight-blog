@@ -9,7 +9,7 @@ const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
 <header class="site-header">
   <div class="header-inner page-shell">
     <a class="wordmark" href={withBase('/')} aria-label={`${siteConfig.name} 首页`}>
-      <span class="wordmark-letter">D</span><span class="wordmark-dot" aria-hidden="true"></span><span class="wordmark-rest">uDuLu</span>
+      <span class="wordmark-letter">Insight</span><span class="wordmark-dot" aria-hidden="true"></span><span class="wordmark-rest">Blog</span>
     </a>
 
     <nav class="desktop-nav" aria-label="主导航">
@@ -54,12 +54,12 @@ const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
     }
   }
 
-  applyTheme((localStorage.getItem('dudulu-theme') as keyof typeof labels) || 'system');
+  applyTheme((localStorage.getItem('insight-blog-theme') as keyof typeof labels) || 'system');
 
   themeButton?.addEventListener('click', () => {
     const current = (root.dataset.themePreference || 'system') as keyof typeof labels;
     const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
-    localStorage.setItem('dudulu-theme', next);
+    localStorage.setItem('insight-blog-theme', next);
     applyTheme(next);
   });
 

@@ -53,7 +53,7 @@ const ogImage = image ?? withBase(`og/site.png`);
     {math && <link rel="stylesheet" href={withBase('katex.min.css')} />}
     <script is:inline>
       (() => {
-        const saved = localStorage.getItem('dudulu-theme') || 'system';
+        const saved = localStorage.getItem('insight-blog-theme') || 'system';
         const dark = matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.dataset.themePreference = saved;
         document.documentElement.dataset.theme = saved === 'system' ? (dark ? 'dark' : 'light') : saved;
