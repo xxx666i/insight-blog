@@ -4,13 +4,14 @@
   "description": "Xiaoxin 的 Git 驱动 Astro 个人博客",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.30.2",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "npm run check && npm run build && npm run test:routes && npm run test:e2e",
+    "test": "pnpm check && pnpm build && pnpm test:routes && pnpm test:e2e",
     "test:routes": "node scripts/audit-build.mjs",
     "test:e2e": "playwright test",
     "test:pages": "node scripts/test-pages-build.mjs"

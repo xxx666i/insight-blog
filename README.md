@@ -5,17 +5,17 @@ Xiaoxin 的 Git 驱动个人博客。使用 Astro Content Collections 管理文�
 ## 本地开发
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 常用检查：
 
 ```bash
-npm run check       # Astro 与 TypeScript
-npm run build       # 生产构建
-npm run test        # 类型、构建、路由和浏览器验收
-npm run test:pages  # 验证 GitHub Pages 构建路径
+pnpm check       # Astro 与 TypeScript
+pnpm build       # 生产构建
+pnpm test        # 类型、构建、路由和浏览器验收
+pnpm test:pages  # 验证 GitHub Pages 构建路径
 ```
 
 ## 写内容
