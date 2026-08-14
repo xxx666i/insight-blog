@@ -1,0 +1,176 @@
+/*
+ * Insight Design System — canonical runtime tokens.
+ *
+ * Pages and components should consume semantic tokens first. The short
+ * aliases at the bottom keep existing styles stable while they are migrated.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Primitive palette: warm paper and ink. */
+  --color-paper: #fefefb;
+  --color-surface-raised: #fffefa;
+  --color-neutral-1: #f9f8f5;
+  --color-neutral-2: #f0efeb;
+  --color-neutral-3: #e3e1db;
+  --color-neutral-4: #d0cec6;
+  --color-neutral-5: #a8a69f;
+  --color-neutral-6: #787670;
+  --color-neutral-7: #5c5a55;
+  --color-neutral-8: #403f3a;
+  --color-neutral-9: #24231f;
+  --color-neutral-10: #141312;
+
+  /* Brand and state colors. */
+  --color-accent: #c56473;
+  --color-accent-soft: #f5dfe4;
+  --color-accent-ink: #a64055;
+  --color-info: #3d6896;
+  --color-success: #5e9f7e;
+  --color-warning: #a87a3d;
+  --color-error: #a64953;
+
+  /* Semantic color roles. */
+  --color-bg-canvas: var(--color-paper);
+  --color-bg-raised: var(--color-surface-raised);
+  --color-bg-subtle: var(--color-neutral-1);
+  --color-bg-hover: var(--color-neutral-2);
+  --color-text-heading: var(--color-neutral-10);
+  --color-text-primary: var(--color-neutral-9);
+  --color-text-strong-secondary: var(--color-neutral-8);
+  --color-text-secondary: var(--color-neutral-7);
+  --color-icon: var(--color-neutral-6);
+  --color-border: rgb(20 19 18 / 10%);
+  --color-focus-ring: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  --color-overlay: rgb(28 22 24 / 54%);
+  --color-search-highlight: color-mix(in srgb, var(--color-success) 38%, transparent);
+  --color-search-highlight-edge: color-mix(in srgb, var(--color-success) 70%, transparent);
+
+  /* Font roles. Noto Serif SC is bundled by the application. */
+  --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  --font-serif: "Iowan Old Style", Baskerville, "Noto Serif SC", "Songti SC", STSong, serif;
+  --font-mono: "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", "Microsoft YaHei", monospace;
+  --font-wordmark: "Iowan Old Style", Baskerville, Georgia, "Noto Serif SC", serif;
+
+  /* Type scale: role + nominal pixel size. */
+  --text-caption-10: 10px;
+  --text-caption-10--line-height: 1.4;
+  --text-label-12: 12px;
+  --text-label-12--line-height: 1.5;
+  --text-copy-13: 13px;
+  --text-copy-13--line-height: 1.54;
+  --text-copy-14: 14px;
+  --text-copy-14--line-height: 1.57;
+  --text-copy-15: 15px;
+  --text-copy-15--line-height: 1.6;
+  --text-copy-16: 16px;
+  --text-copy-16--line-height: 1.625;
+  --text-title-20: 20px;
+  --text-title-20--line-height: 1.4;
+  --text-title-24: 24px;
+  --text-title-24--line-height: 1.33;
+  --text-title-28: 28px;
+  --text-title-28--line-height: 1.29;
+  --text-display-36: 36px;
+  --text-display-36--line-height: 1.22;
+  --text-display-48: 48px;
+  --text-display-48--line-height: 1.17;
+  --text-display-64: 64px;
+  --text-display-64--line-height: 1.08;
+  --text-icon-sm: 14px;
+  --text-icon-md: 16px;
+  --text-icon-lg: 18px;
+
+  /* Four-pixel spatial rhythm. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Shape, depth, blur and motion. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --shadow-whisper: 0 4px 24px rgb(20 19 18 / 5%);
+  --shadow-overlay: 0 18px 52px rgb(20 19 18 / 14%);
+  --blur-ultrathin: 4px;
+  --blur-thin: 12px;
+  --blur-default: 24px;
+  --blur-thick: 40px;
+  --duration-fast: 160ms;
+  --duration-base: 200ms;
+  --duration-slow: 560ms;
+  --duration-theme: 720ms;
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-enter: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --ease-theme: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Layout roles. */
+  --root-font-size: 14px;
+  --page-width: 1200px;
+  --content-width: 720px;
+  --article-content-width: 880px;
+  --article-sidebar-width: 160px;
+  --article-column-gap: 56px;
+  --header-height: 68px;
+  --page-gutter: 24px;
+  --page-gutter-mobile: 16px;
+
+  /* Transitional aliases for existing site styles. */
+  --paper: var(--color-bg-canvas);
+  --paper-raised: var(--color-bg-raised);
+  --n-1: var(--color-neutral-1);
+  --n-2: var(--color-neutral-2);
+  --n-3: var(--color-neutral-3);
+  --n-4: var(--color-neutral-4);
+  --n-5: var(--color-neutral-5);
+  --n-6: var(--color-neutral-6);
+  --n-7: var(--color-neutral-7);
+  --n-8: var(--color-neutral-8);
+  --n-9: var(--color-neutral-9);
+  --n-10: var(--color-neutral-10);
+  --ume: var(--color-accent);
+  --ume-soft: var(--color-accent-soft);
+  --ume-ink: var(--color-accent-ink);
+  --success: var(--color-success);
+  --ring: var(--color-border);
+  --shadow: var(--shadow-whisper);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-paper: #171514;
+  --color-surface-raised: #1d1a19;
+  --color-neutral-1: #141414;
+  --color-neutral-2: #242424;
+  --color-neutral-3: #404040;
+  --color-neutral-4: #5c5c5c;
+  --color-neutral-5: #787878;
+  --color-neutral-6: #a8a8a8;
+  --color-neutral-7: #d0d0d0;
+  --color-neutral-8: #e3e3e3;
+  --color-neutral-9: #f0f0f0;
+  --color-neutral-10: #f8f8f8;
+  --color-accent: #e095a4;
+  --color-accent-soft: #43272d;
+  --color-accent-ink: #f0abb5;
+  --color-info: #74a0cc;
+  --color-success: #80b99d;
+  --color-warning: #d0a15f;
+  --color-error: #d2737d;
+  --color-border: rgb(255 255 255 / 12%);
+  --color-overlay: rgb(0 0 0 / 70%);
+  --shadow-whisper: 0 4px 24px rgb(0 0 0 / 12%);
+  --shadow-overlay: 0 18px 52px rgb(0 0 0 / 32%);
+}

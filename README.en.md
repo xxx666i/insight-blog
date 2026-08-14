@@ -12,7 +12,7 @@ Xiaoxin's Git-driven personal blog. Astro Content Collections keep posts, notes,
 - Typed content collections for posts, notes, and projects, validated with Zod;
 - Markdown and MDX with GFM, math, Mermaid, and footnotes;
 - Dual-theme Shiki highlighting with filenames, line numbers, highlighted lines, and diffs;
-- Tag archives, local full-text search, related posts, and reading-time estimates;
+- Tag archives, a chronological timeline, modal local full-text search, related posts, and reading-time estimates;
 - RSS, Sitemap, robots.txt, and generated Open Graph images;
 - Light, dark, and system theme preferences;
 - Responsive layouts, mobile navigation, and a custom 404 page;
@@ -62,7 +62,8 @@ Open [http://localhost:4321](http://localhost:4321). Press `Ctrl + C` to stop th
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start the local development server |
+| `pnpm dev` | Start the local development server and open the browser |
+| `pnpm start` | Start the local development server without opening the browser |
 | `pnpm check` | Run Astro and TypeScript diagnostics |
 | `pnpm build` | Generate the static site in `dist/` |
 | `pnpm preview` | Preview the production build locally |
@@ -87,6 +88,7 @@ pnpm dev -- --port 4322
 ├─ src/
 │  ├─ components/           # Reusable UI components
 │  ├─ content/              # Posts, notes, and project content
+│  ├─ design-system/        # Runtime tokens, foundations, and shared patterns
 │  ├─ layouts/              # Page and article layouts
 │  ├─ lib/                  # Content queries and URL helpers
 │  ├─ pages/                # Astro routes and resource endpoints
@@ -176,7 +178,9 @@ console.log(ready);
 
 ## Customization
 
-Edit [`src/config.ts`](./src/config.ts) to change the site title, author identity, GitHub URL, contact email, avatar, About-page content, and primary navigation. The avatar is currently empty, so the UI displays a reserved placeholder. Use either an absolute external URL or a static asset URL that accounts for the deployment base path.
+Edit [`src/config.ts`](./src/config.ts) to change the site title, author identity, GitHub URL, contact email, avatar, About-page content, and primary navigation. The default avatar is [`public/profile.jpg`](./public/profile.jpg); it can be replaced with an absolute external URL or another static asset URL that accounts for the deployment base path.
+
+The runtime design system lives in [`src/design-system/`](./src/design-system/README.md) and centralizes color, typography, spacing, motion, and cross-page patterns. The repository-level `design-system/` directory is reference material and is not imported by the application.
 
 ## Testing and Quality Gates
 
@@ -188,7 +192,7 @@ pnpm test
 pnpm test:pages
 ```
 
-`pnpm test` runs type diagnostics, builds 15 HTML pages, validates internal links and search/RSS output, and exercises the site in desktop and mobile browsers. `pnpm test:pages` rebuilds the site and validates the GitHub Pages subpath.
+`pnpm test` validates the design system, Astro, and TypeScript, builds the static pages, checks internal links and search/RSS output, and exercises the site in desktop and mobile browsers. `pnpm test:pages` rebuilds the site and validates the GitHub Pages subpath.
 
 ## Deployment
 
@@ -204,10 +208,6 @@ The workflow in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)
 Astro also accepts `PUBLIC_SITE_URL=https://example.com` at build time, which selects that site URL and the `/` base path. To use it in GitHub Actions, explicitly pass the variable through the workflow and complete DNS and domain verification in GitHub Pages settings.
 
 ## FAQ
-
-### Can `node_modules` be deleted?
-
-Yes. It is ignored local output. Restore it with `pnpm install --frozen-lockfile`.
 
 ### Why is `pnpm-lock.yaml` the only dependency lockfile?
 

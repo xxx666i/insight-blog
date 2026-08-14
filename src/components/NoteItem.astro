@@ -30,13 +30,13 @@ const text = compact ? excerpt(note.body, 115) : plainText(note.body);
 
 <style>
   .note-item { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: clamp(24px, 5vw, 68px); padding: 30px 0 34px; border-bottom: 1px solid var(--ring); }
-  .note-date { display: flex; align-items: center; gap: 12px; padding-top: 5px; color: var(--n-5); font-family: var(--font-mono); font-size: 10px; white-space: nowrap; }
+  .note-date { display: flex; align-items: center; gap: 12px; padding-top: 4px; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .note-date span { width: 20px; height: 1px; background: var(--n-3); }
-  .note-copy h3 { margin: 0 0 7px; font-family: var(--font-sans); font-size: 16px; font-weight: 500; }
+  .note-copy h3 { margin: 0 0 7px; font-family: var(--font-sans); font-size: var(--text-copy-16); font-weight: 500; }
   .note-copy h3 a { text-decoration: none; }
-  .note-copy > p { max-width: 680px; margin: 0; color: var(--n-8); font-size: 14px; line-height: 1.9; white-space: pre-line; }
+  .note-copy > p { max-width: 680px; margin: 0; color: var(--n-8); font-size: var(--text-copy-14); line-height: 1.8; white-space: pre-line; }
   .note-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 18px; }
-  .permalink { flex: none; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; letter-spacing: .05em; text-decoration: none; }
+  .permalink { flex: none; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .03em; text-decoration: none; }
   .permalink:hover { color: var(--ume-ink); }
   .compact { grid-template-columns: 100px minmax(0, 1fr); padding-block: 24px; }
   @media (max-width: 620px) {

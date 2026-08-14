@@ -5,18 +5,20 @@ export const siteConfig = {
   lang: 'zh-CN',
   author: 'Xiaoxin',
   github: 'https://github.com/xxx666i/insight-blog',
-  avatar: '',
+  avatar: 'profile.jpg',
   about: {
     intro: '这里是 Xiaoxin 的长期个人档案。文章、短记和项目都通过 Git 留下清晰的版本与上下文。',
     interests: ['软件与工具', '写作与知识整理', '日常观察'],
     principles: ['先把问题说清楚', '让作品经得起时间', '保留好奇，也保留余白'],
-    contact: '',
+    contact: '1205605528@qq.com',
   },
 } as const;
 
 export const navigation = [
+  { href: '/', label: '首页' },
   { href: '/posts/', label: '文章' },
   { href: '/notes/', label: '随记' },
+  { href: '/timeline/', label: '时光' },
   { href: '/projects/', label: '项目' },
   { href: '/about/', label: '关于' },
 ] as const;

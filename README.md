@@ -12,7 +12,7 @@ Xiaoxin 的 Git 驱动个人博客。使用 Astro Content Collections 管理文�
 - 文章、随记和项目三类内容集合，frontmatter 由 Zod 校验；
 - Markdown 与 MDX，支持 GFM、数学公式、Mermaid 和脚注；
 - Shiki 双主题代码高亮，支持文件名、行号、高亮行与 diff；
-- 标签归档、本地全文搜索、相关文章和阅读时长；
+- 标签归档、时光时间线、弹出式本地全文搜索、相关文章和阅读时长；
 - RSS、Sitemap、robots.txt 和自动生成的 Open Graph 图片；
 - 浅色、深色、跟随系统三态主题；
 - 响应式布局、移动端导航和自定义 404 页面；
@@ -62,7 +62,8 @@ pnpm dev
 
 | 命令 | 作用 |
 | --- | --- |
-| `pnpm dev` | 启动本地开发服务器 |
+| `pnpm dev` | 启动本地开发服务器并自动打开浏览器 |
+| `pnpm start` | 启动本地开发服务器但不自动打开浏览器 |
 | `pnpm check` | 检查 Astro 与 TypeScript |
 | `pnpm build` | 生成 `dist/` 静态产物 |
 | `pnpm preview` | 本地预览生产构建 |
@@ -87,6 +88,7 @@ pnpm dev -- --port 4322
 ├─ src/
 │  ├─ components/           # 通用界面组件
 │  ├─ content/              # 文章、随记和项目内容
+│  ├─ design-system/        # 本项目运行时设计令牌、基础样式与通用模式
 │  ├─ layouts/              # 页面与文章布局
 │  ├─ lib/                  # 内容查询和 URL 工具
 │  ├─ pages/                # Astro 文件路由与资源端点
@@ -180,7 +182,9 @@ console.log(ready);
 
 ## 个性化
 
-编辑 [`src/config.ts`](./src/config.ts) 可以修改站点名称、作者、GitHub 地址、联系邮箱、头像、关于页面内容和主导航。头像目前为空，页面会显示预留槽位；可以使用外部绝对 URL，或使用与当前部署基路径匹配的静态资源地址。
+编辑 [`src/config.ts`](./src/config.ts) 可以修改站点名称、作者、GitHub 地址、联系邮箱、头像、关于页面内容和主导航。默认头像位于 [`public/profile.jpg`](./public/profile.jpg)；也可以改用外部绝对 URL，或使用与当前部署基路径匹配的其他静态资源地址。
+
+站点运行时设计系统位于 [`src/design-system/`](./src/design-system/README.md)，集中维护颜色、字体、间距、动效和跨页面模式。仓库根目录的 `design-system/` 仅作为视觉参考，不由应用直接导入。
 
 ## 测试与质量门禁
 
@@ -192,7 +196,7 @@ pnpm test
 pnpm test:pages
 ```
 
-`pnpm test` 会检查类型、生成 15 个 HTML 页面、验证内部链接和搜索/RSS 产物，并运行桌面端与移动端浏览器测试。`pnpm test:pages` 会再次构建并验证 GitHub Pages 子路径。
+`pnpm test` 会检查设计系统、Astro 与 TypeScript，生成静态页面，验证内部链接和搜索/RSS 产物，并运行桌面端与移动端浏览器测试。`pnpm test:pages` 会再次构建并验证 GitHub Pages 子路径。
 
 ## 部署
 
@@ -208,10 +212,6 @@ pnpm test:pages
 Astro 配置也支持在构建环境中传入 `PUBLIC_SITE_URL=https://example.com`，此时使用自定义站点地址和 `/` 基路径。若要在 GitHub Actions 中启用它，还需要在工作流中显式传递该变量，并在 GitHub Pages 设置中完成 DNS 与域名验证。
 
 ## 常见问题
-
-### `node_modules` 可以删除吗？
-
-可以。它是被 `.gitignore` 排除的本地产物，删除后运行 `pnpm install --frozen-lockfile` 即可恢复。
 
 ### 为什么只提交 `pnpm-lock.yaml`？
 

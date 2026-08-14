@@ -9,13 +9,14 @@ import { withBase } from '../lib/url';
     <nav aria-label="页脚导航">
       {siteConfig.github && <a href={siteConfig.github} rel="me">GitHub</a>}
       <a href={withBase('rss.xml')}>RSS</a>
+      {siteConfig.about.contact && <a href={`mailto:${siteConfig.about.contact}`}>邮箱</a>}
       <a href={withBase('about/')}>关于</a>
     </nav>
   </div>
 </footer>
 
 <style>
-  .site-footer { padding: 26px 0 42px; border-top: 1px solid var(--ring); color: var(--n-6); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
+  .site-footer { padding: 26px 0 42px; border-top: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .04em; }
   .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
   .site-footer p { margin: 0; }
   .site-footer nav { display: flex; gap: 22px; }

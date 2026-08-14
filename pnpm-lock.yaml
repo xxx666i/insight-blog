@@ -35,6 +35,9 @@ importers:
       astro:
         specifier: ^6.4.8
         version: 6.4.8(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.62.4)(yaml@2.9.0)
+      katex:
+        specifier: 0.16.47
+        version: 0.16.47
       markdown-it:
         specifier: ^15.0.0
         version: 15.0.0

@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getNotes, getPosts, getProjects } from '../lib/content';
+import { withBase } from '../lib/url';
+
+const [posts, notes, projects] = await Promise.all([getPosts(), getNotes(), getProjects()]);
+
+const entries = [
+  ...posts.map((entry) => ({
+    type: '文章',
+    title: entry.data.title,
+    date: entry.data.publishedAt,
+    tags: entry.data.tags,
+    href: `posts/${entry.id}/`,
+  })),
+  ...notes.map((entry) => ({
+    type: '随记',
+    title: entry.data.title ?? '无题随记',
+    date: entry.data.publishedAt,
+    tags: entry.data.tags,
+    href: `notes/${entry.id}/`,
+  })),
+  ...projects.map((entry) => ({
+    type: '项目',
+    title: entry.data.title,
+    date: entry.data.publishedAt,
+    tags: entry.data.tags,
+    href: `projects/${entry.id}/`,
+  })),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const years = [...new Set(entries.map((entry) => entry.date.getFullYear()))];
+const formatter = new Intl.DateTimeFormat('zh-CN', { month: 'long' });
+const monthKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}`;
+const labelFor = (entry: (typeof entries)[number]) =>
+  [...entry.tags.slice(0, 2), entry.type].join(' · ');
+---
+
+<BaseLayout title="时光" description="按时间重读 Xiaoxin 的文章、随记与项目。">
+  <div class="timeline-page page-shell page-main">
+    <header class="timeline-intro" data-enter>
+      <p class="eyebrow">Chronological archive</p>
+      <h1 class="timeline-label">时间线</h1>
+      <div class="timeline-total"><strong>{entries.length}</strong><span>篇，再按年历</span></div>
+      <p class="timeline-note">活在当下，珍惜眼下</p>
+    </header>
+
+    <section class="progress-panel" aria-label="时间进度" data-enter style="--enter-index: 1">
+      <div class="progress-stat accent-stat"><strong data-year-day>—</strong><span>今年第几天</span></div>
+      <div class="progress-stat"><strong class="progress-value"><span data-year-progress>—</span><small class="progress-unit">%</small></strong><span>年度进度</span></div>
+      <div class="progress-stat"><strong class="progress-value"><span data-day-progress-whole>—</span><small class="progress-fraction">.<span data-day-progress-decimal>--</span></small><small class="progress-unit">%</small></strong><span>今日进度</span></div>
+    </section>
+
+    <div class="timeline-years" data-enter style="--enter-index: 2">
+      {years.map((year) => {
+        const yearEntries = entries.filter((entry) => entry.date.getFullYear() === year);
+        const months = [...new Set(yearEntries.map((entry) => monthKey(entry.date)))];
+        return (
+          <section class="timeline-year" aria-labelledby={`timeline-${year}`}>
+            <header class="year-heading">
+              <h2 id={`timeline-${year}`}>{year}</h2>
+              <span>本年 {yearEntries.length} 篇</span>
+            </header>
+            <div class="year-stream">
+              {months.map((month) => {
+                const monthEntries = yearEntries.filter((entry) => monthKey(entry.date) === month);
+                return (
+                  <section class="month-group">
+                    <h3>{formatter.format(monthEntries[0].date)} <span>· {monthEntries[0].date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()}</span></h3>
+                    <ol>
+                      {monthEntries.map((entry) => (
+                        <li>
+                          <time datetime={entry.date.toISOString()}>{String(entry.date.getDate()).padStart(2, '0')}</time>
+                          <a href={withBase(entry.href)}>{entry.title}</a>
+                          <span>{labelFor(entry)}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const renderProgress = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year + 1, 0, 1);
+    const startOfToday = new Date(year, now.getMonth(), now.getDate());
+    const endOfToday = new Date(year, now.getMonth(), now.getDate() + 1);
+    const calendarDay = 24 * 60 * 60 * 1000;
+    const yearDay = Math.floor(
+      (Date.UTC(year, now.getMonth(), now.getDate()) - Date.UTC(year, 0, 1)) / calendarDay,
+    ) + 1;
+    const yearProgress = ((now.valueOf() - startOfYear.valueOf()) / (endOfYear.valueOf() - startOfYear.valueOf())) * 100;
+    const dayProgress = ((now.valueOf() - startOfToday.valueOf()) / (endOfToday.valueOf() - startOfToday.valueOf())) * 100;
+
+    const yearDayTarget = document.querySelector('[data-year-day]');
+    const yearProgressTarget = document.querySelector('[data-year-progress]');
+    const dayProgressWholeTarget = document.querySelector('[data-day-progress-whole]');
+    const dayProgressDecimalTarget = document.querySelector('[data-day-progress-decimal]');
+    const [dayProgressWhole, dayProgressDecimal] = dayProgress.toFixed(2).split('.');
+
+    if (yearDayTarget) yearDayTarget.textContent = String(yearDay);
+    if (yearProgressTarget) yearProgressTarget.textContent = yearProgress.toFixed(0);
+    if (dayProgressWholeTarget) dayProgressWholeTarget.textContent = dayProgressWhole;
+    if (dayProgressDecimalTarget) dayProgressDecimalTarget.textContent = dayProgressDecimal;
+  };
+
+  renderProgress();
+  window.setInterval(renderProgress, 60_000);
+</script>
+
+<style>
+  .timeline-page { display: grid; grid-template-columns: minmax(240px, .72fr) minmax(420px, 1.28fr); column-gap: clamp(42px, 7vw, 88px); max-width: 920px; }
+  .timeline-intro { align-self: start; }
+  .timeline-label { margin: 24px 0 4px; color: var(--n-7); font-family: var(--font-sans); font-size: var(--text-copy-14); font-weight: 400; }
+  .timeline-total { display: flex; align-items: baseline; gap: 12px; }
+  .timeline-total strong { color: var(--n-9); font-family: var(--font-sans); font-size: clamp(58px, 7vw, 78px); font-weight: 400; line-height: 1; letter-spacing: -.06em; }
+  .timeline-total span { color: var(--n-8); font-size: var(--text-copy-15); }
+  .timeline-note { margin: 16px 0 0; color: var(--n-7); font-family: var(--font-serif); font-size: var(--text-copy-15); }
+  .progress-panel { align-self: end; justify-self: end; display: grid; grid-template-columns: repeat(3, minmax(84px, max-content)); gap: clamp(22px, 3vw, 34px); margin-bottom: 4px; padding: 20px 0; }
+  .progress-stat { display: grid; justify-items: start; gap: 5px; min-width: 84px; }
+  .progress-stat strong { color: var(--n-8); font-family: var(--font-sans); font-size: clamp(28px, 4vw, 38px); font-variant-numeric: tabular-nums; font-weight: 400; line-height: 1; letter-spacing: -.04em; }
+  .progress-value { display: flex; align-items: baseline; min-height: 38px; }
+  .progress-stat .progress-unit { margin-left: 2px; color: var(--n-6); font-size: var(--text-label-12); letter-spacing: 0; }
+  .progress-stat .progress-fraction { margin-left: 1px; color: var(--n-7); font-size: var(--text-copy-14); letter-spacing: -.02em; }
+  .progress-stat > span { color: var(--n-6); font-size: var(--text-label-12); }
+  .accent-stat strong { color: var(--ume); }
+  .timeline-years { grid-column: 1 / -1; display: grid; gap: 68px; margin-top: 44px; }
+  .year-heading { display: flex; align-items: baseline; gap: 14px; }
+  .year-heading h2 { margin: 0; color: var(--n-7); font-family: var(--font-sans); font-size: var(--text-display-36); font-weight: 400; letter-spacing: -.045em; }
+  .year-heading span { color: var(--n-6); font-size: var(--text-label-12); }
+  .year-stream { position: relative; display: grid; gap: 34px; margin-top: 24px; padding-left: 36px; }
+  .year-stream::before { position: absolute; top: 2px; bottom: 0; left: 8px; width: 1px; background: var(--ring); content: ''; }
+  .month-group h3 { margin: 0 0 12px; color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); font-weight: 400; letter-spacing: .1em; text-transform: uppercase; }
+  .month-group h3 span { color: var(--n-6); }
+  .month-group ol { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
+  .month-group li { display: grid; grid-template-columns: 28px minmax(0, 1fr) minmax(120px, auto); gap: 14px; align-items: baseline; min-height: 38px; padding: 8px 10px 8px 0; border-radius: 6px; transition: background 160ms ease; }
+  .month-group li:hover { background: color-mix(in srgb, var(--n-1) 76%, transparent); }
+  .month-group time { color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-label-12); }
+  .month-group a { color: var(--n-9); font-size: var(--text-copy-14); text-decoration: none; }
+  .month-group a:hover { color: var(--ume-ink); }
+  .month-group li > span { color: var(--n-6); font-size: var(--text-label-12); text-align: right; }
+  @media (max-width: 760px) {
+    .timeline-page { display: block; }
+    .progress-panel { justify-self: auto; justify-content: start; margin: 24px 0 0; padding: 18px 0 24px; }
+    .timeline-years { gap: 58px; margin-top: 38px; }
+  }
+  @media (max-width: 660px) {
+    .progress-panel { gap: 22px; }
+    .progress-stat strong { font-size: 26px; }
+    .year-stream { padding-left: 24px; }
+    .year-stream::before { left: 4px; }
+    .month-group li { grid-template-columns: 26px minmax(0, 1fr); }
+    .month-group li > span { grid-column: 2; margin-top: -4px; text-align: left; }
+  }
+</style>
