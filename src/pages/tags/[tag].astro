@@ -42,10 +42,10 @@ const tags = uniqueTags([...posts, ...notes, ...projects]);
   .tag-switcher { display: flex; align-items: flex-start; gap: 8px; margin-top: 48px; padding-bottom: 22px; border-bottom: 1px solid var(--ring); }
   .all-tags { flex: none; }
   .tag-results article { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 18px; padding: 27px 0; border-bottom: 1px solid var(--ring); }
-  .tag-results article > span { color: var(--n-4); font-family: var(--font-mono); font-size: 9px; }
-  .tag-results article > div > p:first-child { margin: 0; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; }
-  .tag-results h2 { margin: 5px 0; font-family: var(--font-serif); font-size: 22px; font-weight: 500; }
+  .tag-results article > span { color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); }
+  .tag-results article > div > p:first-child { margin: 0; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); }
+  .tag-results h2 { margin: 5px 0; font-family: var(--font-serif); font-size: var(--text-title-20); font-weight: 500; }
   .tag-results h2 a { text-decoration: none; }
-  .tag-results article > div > p:last-child { margin: 0; color: var(--n-6); font-size: 13px; }
-  .tag-results article > a { color: var(--n-5); text-decoration: none; }
+  .tag-results article > div > p:last-child { margin: 0; color: var(--n-7); font-size: var(--text-copy-13); }
+  .tag-results article > a { color: var(--n-6); text-decoration: none; }
 </style>

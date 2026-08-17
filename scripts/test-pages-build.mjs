@@ -12,8 +12,8 @@ const env = {
   GITHUB_REPOSITORY: repository,
 };
 
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const build = spawnSync(npmCommand, ['run', 'build'], { stdio: 'inherit', env, shell: process.platform === 'win32' });
+const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+const build = spawnSync(pnpmCommand, ['run', 'build'], { stdio: 'inherit', env, shell: process.platform === 'win32' });
 if (build.error) console.error(build.error);
 if (build.status !== 0) process.exit(build.status ?? 1);
 

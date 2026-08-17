@@ -33,12 +33,12 @@ const years = [...new Set(posts.map((post) => post.data.publishedAt.getFullYear(
 
 <style>
   .archive-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 50px; border-bottom: 1px solid var(--ring); }
-  .archive-count { display: flex; flex-direction: column; margin: 0; color: var(--n-5); font-family: var(--font-mono); font-size: 10px; text-align: right; }
+  .archive-count { display: flex; flex-direction: column; margin: 0; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); text-align: right; }
   .archive-count strong { color: var(--n-10); font-family: var(--font-serif); font-size: 44px; font-weight: 500; line-height: 1; }
   .tag-filter { display: flex; align-items: flex-start; gap: 22px; padding: 25px 0; border-bottom: 1px solid var(--ring); }
-  .tag-filter > span { padding-top: 9px; color: var(--n-4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em; }
+  .tag-filter > span { padding-top: 9px; color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .1em; }
   .year-group { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 28px; padding-top: 60px; }
-  .year-group h2 { position: sticky; top: calc(var(--header-height) + 24px); align-self: start; margin: 0; color: var(--n-4); font-family: var(--font-serif); font-size: 28px; font-weight: 400; }
+  .year-group h2 { position: sticky; top: calc(var(--header-height) + 24px); align-self: start; margin: 0; color: var(--n-7); font-family: var(--font-serif); font-size: var(--text-title-28); font-weight: 400; }
   @media (max-width: 620px) {
     .archive-header { align-items: flex-start; }
     .archive-count { display: none; }

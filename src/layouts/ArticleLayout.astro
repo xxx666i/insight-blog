@@ -46,55 +46,47 @@ const {
   showTitle = true,
 } = Astro.props;
 
-const hasToc = headings.filter((heading) => heading.depth === 2 && heading.text !== 'Footnotes').length >= 3;
+const hasToc = headings.some((heading) => heading.depth === 2 && heading.text !== 'Footnotes');
 ---
 
 <BaseLayout title={title} description={description} image={image} type="article" noindex={draft} math={math}>
   {math && <MathStyles />}
   <article class="article-page" data-mermaid={mermaid ? 'true' : undefined}>
     <header class="article-header page-shell" data-enter>
-      <a class="back-link" href={withBase(backHref)}>← 返回{kind}</a>
-      <p class="eyebrow">{kind === '文章' ? 'Long-form writing' : kind === '随记' ? 'A note in passing' : 'Project case study'}</p>
-      <h1 class:list={['article-title', { 'visually-hidden': !showTitle }]}>{title}</h1>
-      {description && <p class="article-deck">{description}</p>}
-      <div class="article-meta">
-        <div class="meta-row">
-          <time datetime={publishedAt.toISOString()}>发布于 {formatDate(publishedAt)}</time>
-          {updatedAt && <time datetime={updatedAt.toISOString()}>更新于 {formatDate(updatedAt)}</time>}
-          {readingTime && <span>{readingTime} 分钟阅读</span>}
-          {draft && <span class="draft">本地草稿</span>}
+      <div class="article-heading">
+        <a class="back-link" href={withBase(backHref)}>← 返回{kind}</a>
+        <p class="eyebrow">{kind === '文章' ? 'Long-form writing' : kind === '随记' ? 'A note in passing' : 'Project case study'}</p>
+        <h1 class:list={['article-title', { 'visually-hidden': !showTitle }]}>{title}</h1>
+        <div class="article-meta">
+          <div class="meta-row">
+            <time datetime={publishedAt.toISOString()}>发布于 {formatDate(publishedAt)}</time>
+            {updatedAt && <time datetime={updatedAt.toISOString()}>更新于 {formatDate(updatedAt)}</time>}
+            {readingTime && <span>{readingTime} 分钟阅读</span>}
+            {draft && <span class="draft">本地草稿</span>}
+          </div>
         </div>
-        {tags.length > 0 && <TagList tags={tags} />}
       </div>
+      {tags.length > 0 && <div class="article-header-tags"><TagList tags={tags} /></div>}
+      {description && (
+        <aside class="article-insight" aria-labelledby="article-insight-title">
+          <p id="article-insight-title" class="article-insight-label"><span aria-hidden="true">◇</span> 关键洞察</p>
+          <p>{description}</p>
+        </aside>
+      )}
     </header>
 
     <div class:list={['article-grid', 'page-shell', { 'has-toc': hasToc }]}>
-      <aside class="article-rail" aria-label="文章操作">
-        <span>{kind}</span>
-        <button class="copy-link" type="button">复制链接</button>
-      </aside>
       <div class="article-content">
-        {hasToc && <TableOfContents headings={headings} variant="mobile" />}
+        <TableOfContents headings={headings} title={title} variant="mobile" />
         <div class="prose"><slot /></div>
       </div>
-      {hasToc && <TableOfContents headings={headings} variant="desktop" />}
+      <TableOfContents headings={headings} title={title} variant="desktop" />
     </div>
     <slot name="after" />
   </article>
 </BaseLayout>
 
 <script>
-  document.querySelector<HTMLButtonElement>('.copy-link')?.addEventListener('click', async (event) => {
-    const button = event.currentTarget as HTMLButtonElement;
-    try {
-      await navigator.clipboard.writeText(location.href);
-      button.textContent = '已复制';
-    } catch {
-      button.textContent = '复制失败';
-    }
-    setTimeout(() => { button.textContent = '复制链接'; }, 1600);
-  });
-
   document.querySelectorAll<HTMLElement>('.prose pre.astro-code').forEach((pre) => {
     if (pre.parentElement?.classList.contains('code-frame')) return;
     const frame = document.createElement('div');
@@ -121,21 +113,22 @@ const hasToc = headings.filter((heading) => heading.depth === 2 && heading.text 
   if (article) {
     const blocks = [...article.querySelectorAll<HTMLElement>('pre[data-language="mermaid"], pre.astro-code.language-mermaid')];
     if (blocks.length) {
+      const targets = blocks.map((block) => {
+        const target = document.createElement('div');
+        target.className = 'mermaid';
+        target.textContent = block.textContent || '';
+        const frame = block.closest('.code-frame');
+        (frame || block).replaceWith(target);
+        return target;
+      });
       import('mermaid').then(({ default: mermaid }) => {
-        blocks.forEach((block) => {
-          const target = document.createElement('div');
-          target.className = 'mermaid';
-          target.textContent = block.textContent || '';
-          const frame = block.closest('.code-frame');
-          (frame || block).replaceWith(target);
-        });
         mermaid.initialize({
           startOnLoad: false,
           theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'neutral',
           securityLevel: 'strict',
           fontFamily: 'var(--font-sans)',
         });
-        mermaid.run({ nodes: blocks.map((_, index) => document.querySelectorAll<HTMLElement>('.mermaid')[index]).filter(Boolean) });
+        mermaid.run({ nodes: targets });
       });
     }
   }
@@ -143,19 +136,21 @@ const hasToc = headings.filter((heading) => heading.depth === 2 && heading.text 
 
 <style>
   .article-page { padding: clamp(52px, 8vw, 90px) 0 100px; }
-  .article-header { max-width: 900px; padding-bottom: 58px; }
-  .back-link { display: inline-block; margin-bottom: 52px; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; text-decoration: none; }
+  .article-header, .article-grid { max-width: 1120px; grid-template-columns: minmax(0, 1fr) var(--article-sidebar-width); column-gap: var(--article-column-gap); }
+  .article-header { display: grid; align-items: end; padding-bottom: 46px; }
+  .article-heading { grid-column: 1; grid-row: 1; min-width: 0; }
+  .article-header-tags { grid-column: 2; grid-row: 1; align-self: end; }
+  .back-link { display: inline-block; margin-bottom: 52px; color: var(--n-8); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .04em; line-height: 1.5; text-decoration: none; }
   .back-link:hover { color: var(--ume-ink); }
-  .article-deck { max-width: 700px; margin: 24px 0 0; color: var(--n-6); font-family: var(--font-serif); font-size: 18px; line-height: 1.8; }
-  .article-meta { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-top: 30px; }
+  .article-meta { margin-top: 30px; }
   .draft { color: var(--ume-ink); }
-  .article-grid { display: grid; grid-template-columns: minmax(70px, 1fr) minmax(0, var(--content-width)) minmax(150px, 1fr); gap: clamp(22px, 4vw, 52px); align-items: start; padding-top: 58px; border-top: 1px solid var(--ring); }
-  .article-grid:not(.has-toc) { grid-template-columns: minmax(70px, 1fr) minmax(0, var(--content-width)) minmax(70px, 1fr); }
-  .article-rail { position: sticky; top: calc(var(--header-height) + 30px); display: flex; flex-direction: column; align-items: flex-start; gap: 26px; color: var(--n-4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; writing-mode: vertical-rl; }
-  .copy-link { padding: 0; border: 0; color: var(--n-5); background: transparent; font-family: inherit; font-size: inherit; letter-spacing: inherit; cursor: pointer; writing-mode: vertical-rl; }
-  .copy-link:hover { color: var(--ume-ink); }
-  .article-content > :global(.toc-mobile) { display: none; }
-  .prose { color: var(--n-9); font-family: var(--font-serif); font-size: 17px; line-height: 2.05; }
+  .article-grid { display: grid; align-items: start; padding-top: 46px; border-top: 1px solid var(--ring); }
+  .article-content > :global(.toc-mobile-shell) { display: none; }
+  .article-insight { grid-column: 1; grid-row: 2; margin: 20px 0 0; padding: 20px 22px 21px; border: 1px solid var(--ring); border-left: 2px solid var(--ume); border-radius: var(--radius-md); background: color-mix(in srgb, var(--paper-raised) 88%, var(--ume-soft)); }
+  .article-insight-label { display: flex; margin: 0 0 8px; align-items: center; gap: 6px; color: var(--ume-ink); font-family: var(--font-sans); font-size: var(--text-copy-13); font-weight: 500; line-height: var(--text-copy-13--line-height); }
+  .article-insight-label span { color: var(--ume); font-family: var(--font-mono); font-size: var(--text-copy-15); }
+  .article-insight > p:last-child { margin: 0; color: var(--n-8); font-family: var(--font-serif); font-size: var(--text-copy-15); line-height: 1.9; }
+  .prose { color: var(--n-9); font-family: var(--font-serif); font-size: var(--text-copy-16); line-height: 2; }
   .prose :global(> *:first-child) { margin-top: 0; }
   .prose :global(p) { margin: 1.35em 0; }
   .prose :global(h2), .prose :global(h3), .prose :global(h4) { color: var(--n-10); font-weight: 500; text-wrap: balance; }
@@ -164,7 +159,7 @@ const hasToc = headings.filter((heading) => heading.depth === 2 && heading.text 
   .prose :global(h2 a), .prose :global(h3 a) { text-decoration: none; }
   .prose :global(h2 a:hover::after), .prose :global(h3 a:hover::after) { margin-left: .35em; color: var(--ume); content: '#'; font-family: var(--font-mono); font-size: .55em; }
   .prose :global(a) { color: var(--ume-ink); text-decoration-color: color-mix(in srgb, var(--ume) 45%, transparent); }
-  .prose :global(strong) { color: var(--n-10); font-weight: 600; }
+  .prose :global(strong) { color: var(--n-10); font-weight: 500; }
   .prose :global(ul), .prose :global(ol) { margin: 1.2em 0; padding-left: 1.4em; }
   .prose :global(li) { margin: .38em 0; padding-left: .25em; }
   .prose :global(li::marker) { color: var(--ume); font-family: var(--font-mono); font-size: .75em; }
@@ -172,35 +167,35 @@ const hasToc = headings.filter((heading) => heading.depth === 2 && heading.text 
   .prose :global(hr) { height: 1px; margin: 3.2em 0; border: 0; background: var(--ring); }
   .prose :global(img) { max-width: 100%; height: auto; margin: 2.2em auto; border: 1px solid var(--ring); }
   .prose :global(code:not(pre code)) { padding: .14em .36em; border: 1px solid var(--ring); border-radius: 3px; color: var(--ume-ink); background: var(--n-1); font-family: var(--font-mono); font-size: .82em; }
-  .prose :global(table) { display: block; width: 100%; margin: 2em 0; overflow-x: auto; border-collapse: collapse; font-family: var(--font-sans); font-size: 13px; }
+  .prose :global(table) { display: block; width: 100%; margin: 2em 0; overflow-x: auto; border-collapse: collapse; font-family: var(--font-sans); font-size: var(--text-copy-13); }
   .prose :global(th), .prose :global(td) { padding: 10px 14px; border: 1px solid var(--ring); text-align: left; }
   .prose :global(th) { color: var(--n-10); background: var(--n-1); font-weight: 500; }
-  .prose :global(.code-frame) { margin: 2.1em 0; overflow: hidden; border: 1px solid var(--ring); border-radius: 7px; background: var(--paper-raised); box-shadow: var(--shadow); }
-  .prose :global(.code-bar) { display: flex; align-items: center; justify-content: space-between; min-height: 36px; padding: 0 12px; border-bottom: 1px solid var(--ring); color: var(--n-5); font-family: var(--font-mono); font-size: 9px; letter-spacing: .05em; }
-  .prose :global(.code-bar button) { padding: 4px 7px; border: 0; color: var(--n-5); background: transparent; font-family: inherit; font-size: inherit; cursor: pointer; }
+  .prose :global(.code-frame) { margin: 2.1em 0; overflow: hidden; border: 1px solid var(--ring); border-radius: 8px; background: var(--paper-raised); box-shadow: var(--shadow); }
+  .prose :global(.code-bar) { display: flex; align-items: center; justify-content: space-between; min-height: 38px; padding: 0 12px; border-bottom: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .03em; }
+  .prose :global(.code-bar button) { padding: 4px 7px; border: 0; color: var(--n-7); background: transparent; font-family: inherit; font-size: inherit; cursor: pointer; }
   .prose :global(.code-bar button:hover) { color: var(--ume-ink); }
-  .prose :global(pre.astro-code) { margin: 0; padding: 19px 20px; overflow: auto; background: var(--paper-raised) !important; font-family: var(--font-mono); font-size: 12px; line-height: 1.75; }
+  .prose :global(pre.astro-code) { margin: 0; padding: 19px 20px; overflow: auto; background: var(--paper-raised) !important; font-family: var(--font-mono); font-size: var(--text-label-12); line-height: 1.75; }
   :root[data-theme='dark'] .prose :global(pre.astro-code), :root[data-theme='dark'] .prose :global(pre.astro-code span) { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
   .prose :global(.highlighted) { display: inline-block; width: calc(100% + 40px); margin-left: -20px; padding-left: 18px; border-left: 2px solid var(--ume); background: var(--ume-soft); }
   .prose :global(.diff.add) { background: color-mix(in srgb, var(--success) 13%, transparent); }
   .prose :global(.diff.remove) { opacity: .68; background: color-mix(in srgb, var(--ume) 11%, transparent); }
   .prose :global(pre.show-line-numbers code) { counter-reset: line; }
-  .prose :global(pre.show-line-numbers .line)::before { display: inline-block; width: 2.4em; margin-right: 1.2em; color: var(--n-4); content: counter(line); counter-increment: line; text-align: right; }
+  .prose :global(pre.show-line-numbers .line)::before { display: inline-block; width: 2.4em; margin-right: 1.2em; color: var(--n-7); content: counter(line); counter-increment: line; text-align: right; }
   .prose :global(.mermaid) { margin: 2.2em 0; padding: 24px; overflow-x: auto; border: 1px solid var(--ring); background: var(--paper-raised); text-align: center; }
-  .prose :global(.footnotes) { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--ring); color: var(--n-6); font-size: .82em; }
+  .prose :global(.footnotes) { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--ring); color: var(--n-7); font-size: .82em; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   @media (max-width: 980px) {
-    .article-grid, .article-grid:not(.has-toc) { grid-template-columns: 34px minmax(0, var(--content-width)); justify-content: center; }
+    .article-header { display: block; max-width: var(--article-content-width); }
+    .article-header-tags { margin-top: 22px; }
+    .article-grid { display: block; max-width: var(--article-content-width); }
     .article-grid > :global(.toc) { display: none; }
-    .article-content > :global(.toc-mobile) { display: block; }
+    .article-content > :global(.toc-mobile-shell) { display: block; }
   }
   @media (max-width: 680px) {
-    .article-header { padding-bottom: 42px; }
+    .article-header { padding-bottom: 32px; }
     .back-link { margin-bottom: 36px; }
-    .article-meta { align-items: flex-start; flex-direction: column; }
-    .article-grid, .article-grid:not(.has-toc) { display: block; padding-top: 38px; }
-    .article-rail { position: static; flex-direction: row; justify-content: space-between; margin-bottom: 30px; writing-mode: initial; }
-    .copy-link { writing-mode: initial; }
-    .prose { font-size: 16px; line-height: 1.95; }
+    .article-grid { display: block; padding-top: 32px; }
+    .article-insight { margin-top: 18px; padding: 17px 18px 18px; }
+    .prose { font-size: var(--text-copy-16); line-height: 1.95; }
   }
 </style>

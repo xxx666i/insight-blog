@@ -62,15 +62,17 @@ const related = relatedPosts(post, posts);
 </ArticleLayout>
 
 <style>
-  .post-footer { max-width: 960px; margin-top: 82px; }
-  .code-license { padding: 13px 0; border-block: 1px solid var(--ring); color: var(--n-5); font-family: var(--font-mono); font-size: 10px; }
-  .post-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 56px; background: var(--ring); border: 1px solid var(--ring); }
+  .post-footer { display: grid; grid-template-columns: minmax(0, var(--article-content-width)) var(--article-sidebar-width); column-gap: var(--article-column-gap); max-width: var(--page-width); margin-top: 82px; justify-content: space-between; }
+  .post-footer > * { grid-column: 1; }
+  .code-license { padding: 13px 0; border-block: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); }
+  .post-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 56px; overflow: hidden; background: var(--ring); border: 1px solid var(--ring); border-radius: 8px; }
   .post-pagination > div { min-height: 136px; padding: 24px; background: var(--paper); }
-  .post-pagination span { display: block; margin-bottom: 20px; color: var(--n-4); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; }
+  .post-pagination span { display: block; margin-bottom: 20px; color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
   .post-pagination a { display: inline; color: var(--n-9); font-family: var(--font-serif); font-size: 18px; line-height: 1.5; text-decoration-color: transparent; }
   .post-pagination a:hover { color: var(--ume-ink); text-decoration-color: var(--ume); }
   .next-post { text-align: right; }
   .related { margin-top: 84px; }
-  .related .section-heading > span { color: var(--n-4); font-family: var(--font-mono); font-size: 8px; letter-spacing: .08em; }
+  .related .section-heading > span { color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
+  @media (max-width: 980px) { .post-footer { display: block; max-width: var(--article-content-width); } }
   @media (max-width: 600px) { .post-pagination { grid-template-columns: 1fr; } .next-post { text-align: left; } }
 </style>

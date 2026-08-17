@@ -25,16 +25,16 @@ const external = Boolean(project.data.externalUrl);
 </article>
 
 <style>
-  .project-item { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 18px; min-height: 220px; padding: 24px; border: 1px solid var(--ring); background: color-mix(in srgb, var(--paper-raised) 70%, transparent); transition: border-color 180ms ease, transform 180ms ease, background 180ms ease; }
-  .project-item:hover { border-color: color-mix(in srgb, var(--ume) 45%, var(--ring)); background: var(--paper-raised); transform: translateY(-2px); }
-  .project-number { color: var(--n-4); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; }
-  .project-status { display: flex; align-items: center; gap: 8px; margin: 0 0 28px; color: var(--n-6); font-family: var(--font-mono); font-size: 9px; letter-spacing: .07em; }
+  .project-item { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 18px; min-height: 220px; padding: 24px; border: 1px solid var(--ring); border-radius: 8px; background: color-mix(in srgb, var(--n-1) 62%, transparent); transition: border-color 180ms ease, transform 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+  .project-item:hover { border-color: color-mix(in srgb, var(--ume) 45%, var(--ring)); background: var(--paper-raised); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .project-number { color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .project-status { display: flex; align-items: center; gap: 8px; margin: 0 0 28px; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .04em; }
   .project-status span { width: 5px; height: 5px; border-radius: 50%; background: var(--ume); }
-  h3 { margin: 0 0 9px; color: var(--n-10); font-family: var(--font-serif); font-size: 24px; font-weight: 500; line-height: 1.2; }
+  h3 { margin: 0 0 9px; color: var(--n-10); font-family: var(--font-serif); font-size: var(--text-title-24); font-weight: 500; line-height: 1.2; }
   h3 a { text-decoration: none; }
-  .project-summary { max-width: 430px; margin: 0; color: var(--n-6); font-size: 13px; }
-  .project-tech { margin: 22px 0 0; color: var(--n-5); font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; }
-  .project-open { color: var(--n-5); text-decoration: none; }
+  .project-summary { max-width: 430px; margin: 0; color: var(--n-7); font-size: var(--text-copy-13); }
+  .project-tech { margin: 22px 0 0; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); text-transform: uppercase; }
+  .project-open { color: var(--n-7); text-decoration: none; }
   .project-item:hover .project-open { color: var(--ume); }
   @media (max-width: 520px) {
     .project-item { grid-template-columns: minmax(0, 1fr) auto; min-height: 200px; }

@@ -42,12 +42,12 @@ const { Content, headings } = await render(project);
 </ArticleLayout>
 
 <style>
-  .project-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0 0 3em; padding: 1px; background: var(--ring); font-family: var(--font-sans); }
+  .project-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0 0 3em; padding: 1px; overflow: hidden; border-radius: 8px; background: var(--ring); font-family: var(--font-sans); }
   .project-facts div { padding: 14px 16px; background: var(--paper); }
-  .project-facts dt { color: var(--n-5); font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; }
-  .project-facts dd { margin: 4px 0 0; color: var(--n-9); font-size: 13px; }
+  .project-facts dt { color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
+  .project-facts dd { margin: 4px 0 0; color: var(--n-9); font-size: var(--text-copy-13); }
   .project-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--ring); }
-  .project-links a { padding: 8px 13px; border: 1px solid var(--ring); color: var(--n-8); font-family: var(--font-sans); font-size: 12px; text-decoration: none; }
+  .project-links a { padding: 8px 13px; border: 1px solid var(--ring); border-radius: 6px; color: var(--n-8); font-family: var(--font-sans); font-size: var(--text-label-12); text-decoration: none; }
   .project-links a:hover { border-color: var(--ume); color: var(--ume-ink); }
   @media (max-width: 520px) { .project-facts { grid-template-columns: 1fr; } }
 </style>

@@ -14,6 +14,7 @@ const expected = [
   'notes/quiet-interface/index.html',
   'projects/index.html',
   'projects/personal-archive/index.html',
+  'timeline/index.html',
   'search-index.json',
   'rss.xml',
   'sitemap-index.xml',
@@ -57,7 +58,10 @@ for (const file of htmlFiles) {
 }
 
 const searchIndex = JSON.parse(readFileSync(join(root, 'search-index.json'), 'utf8'));
-if (searchIndex.length !== 4) failures.push(`搜索索引应包含 4 条示例内容，实际为 ${searchIndex.length}`);
+const detailPages = htmlFiles.filter((file) => /^(posts|notes|projects)[/\\][^/\\]+[/\\]index\.html$/.test(relative(root, file)));
+if (searchIndex.length !== detailPages.length) {
+  failures.push(`搜索索引应覆盖 ${detailPages.length} 个公开详情页，实际为 ${searchIndex.length}`);
+}
 if (!readFileSync(join(root, 'rss.xml'), 'utf8').includes('这个网站从一个很朴素的愿望开始')) {
   failures.push('RSS 未包含文章全文');
 }

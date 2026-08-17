@@ -3,18 +3,24 @@ import { navigation, siteConfig } from '../config';
 import { withBase } from '../lib/url';
 
 const currentPath = Astro.url.pathname;
-const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
+const homePath = withBase('/');
+const isCurrent = (href: string) => href === '/'
+  ? currentPath === homePath
+  : currentPath.startsWith(withBase(href));
 ---
 
 <header class="site-header">
   <div class="header-inner page-shell">
     <a class="wordmark" href={withBase('/')} aria-label={`${siteConfig.name} 首页`}>
-      <span class="wordmark-letter">Insight</span><span class="wordmark-dot" aria-hidden="true"></span><span class="wordmark-rest">Blog</span>
+      {siteConfig.avatar && <img class="wordmark-avatar" src={withBase(siteConfig.avatar)} alt="" />}
+      <span class="wordmark-text">Insight Blog</span>
     </a>
 
     <nav class="desktop-nav" aria-label="主导航">
       {navigation.map((item) => (
-        <a href={withBase(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+        <a href={withBase(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          <span>{item.label}</span>
+        </a>
       ))}
     </nav>
 
@@ -23,13 +29,23 @@ const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
         <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
       </button>
       <button class="icon-button theme-toggle" type="button" aria-label="切换主题" title="切换主题">
-        <span class="theme-glyph" aria-hidden="true">◐</span>
+        <span class="theme-icon theme-icon-system" data-theme-icon="system" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="12.5" rx="2"></rect><path d="M8 20h8M12 16.5V20"></path></svg>
+        </span>
+        <span class="theme-icon theme-icon-light" data-theme-icon="light" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>
+        </span>
+        <span class="theme-icon theme-icon-dark" data-theme-icon="dark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 15.4A8.4 8.4 0 0 1 8.6 4a8.4 8.4 0 1 0 11.4 11.4Z"></path></svg>
+        </span>
       </button>
       <details class="mobile-menu">
         <summary aria-label="打开导航"><span></span><span></span></summary>
         <nav aria-label="移动端导航">
           {navigation.map((item) => (
-            <a href={withBase(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+            <a href={withBase(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              <span>{item.label}</span>
+            </a>
           ))}
         </nav>
       </details>
@@ -60,7 +76,11 @@ const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
     const current = (root.dataset.themePreference || 'system') as keyof typeof labels;
     const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
     localStorage.setItem('insight-blog-theme', next);
-    applyTheme(next);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'startViewTransition' in document) {
+      document.startViewTransition(() => applyTheme(next));
+    } else {
+      applyTheme(next);
+    }
   });
 
   media.addEventListener('change', () => {
@@ -78,36 +98,43 @@ const isCurrent = (href: string) => currentPath.startsWith(withBase(href));
     top: 0;
     z-index: 40;
     height: var(--header-height);
-    border-bottom: 1px solid color-mix(in srgb, var(--ring) 68%, transparent);
-    background: color-mix(in srgb, var(--paper) 88%, transparent);
-    backdrop-filter: blur(18px) saturate(120%);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 68%, transparent);
+    background: color-mix(in srgb, var(--color-bg-canvas) 88%, transparent);
+    backdrop-filter: blur(var(--blur-ultrathin)) saturate(120%);
   }
   .header-inner { display: flex; height: 100%; align-items: center; }
-  .wordmark { display: inline-flex; align-items: baseline; margin-right: auto; color: var(--n-10); text-decoration: none; }
-  .wordmark-letter, .wordmark-rest { font-family: var(--font-serif); font-size: 21px; font-weight: 500; letter-spacing: -.055em; }
-  .wordmark-dot { width: 5px; height: 5px; margin: 0 1px 10px -1px; border-radius: 50%; background: var(--ume); }
-  .desktop-nav { display: flex; align-items: center; gap: 30px; margin-right: 28px; }
-  .desktop-nav a { position: relative; color: var(--n-6); font-size: 13px; text-decoration: none; }
-  .desktop-nav a:hover, .desktop-nav a[aria-current='page'] { color: var(--n-10); }
-  .desktop-nav a[aria-current='page']::after { position: absolute; right: 0; bottom: -23px; left: 0; height: 1px; background: var(--ume); content: ''; }
+  .wordmark { display: inline-flex; align-items: center; gap: 10px; margin-right: auto; color: var(--color-text-heading); text-decoration: none; }
+  .wordmark-avatar { width: 34px; height: 34px; border: 1px solid var(--color-border); border-radius: 50%; object-fit: cover; }
+  .wordmark-text { font-family: var(--font-wordmark); font-size: var(--text-title-20); font-weight: 500; letter-spacing: -.045em; }
+  .desktop-nav { display: flex; align-items: center; gap: 3px; margin-right: 22px; padding: 3px; border: 0; border-radius: var(--radius-lg); }
+  .desktop-nav a { position: relative; display: inline-flex; min-height: 30px; padding: 5px 10px; align-items: center; border: 1px solid transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); font-size: var(--text-copy-13); text-decoration: none; transition: color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard); }
+  .desktop-nav a:hover, .desktop-nav a:focus-visible { border-color: var(--color-border); color: var(--color-text-heading); background: var(--color-bg-subtle); }
+  .desktop-nav a:focus-visible { outline-offset: 1px; }
+  .desktop-nav a[aria-current='page'] { border-color: var(--color-border); color: var(--color-text-heading); background: var(--color-bg-raised); }
+  .desktop-nav a[aria-current='page']::after { position: absolute; right: 10px; bottom: 2px; left: 10px; height: 1px; background: var(--color-accent); content: ''; }
   .header-actions { display: flex; align-items: center; gap: 5px; }
-  .icon-button { display: grid; width: 34px; height: 34px; padding: 0; place-items: center; border: 0; border-radius: 50%; color: var(--n-6); background: transparent; cursor: pointer; }
-  .icon-button:hover { color: var(--n-10); background: var(--n-1); }
+  .icon-button { display: grid; width: 34px; height: 34px; padding: 0; place-items: center; border: 0; border-radius: 50%; color: var(--color-text-secondary); background: transparent; cursor: pointer; }
+  .icon-button:hover { color: var(--color-text-heading); background: var(--color-bg-subtle); }
   .icon-button svg { width: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; }
-  .theme-glyph { font-family: var(--font-mono); font-size: 17px; transform: rotate(-18deg); }
-  .theme-toggle[data-preference='light'] .theme-glyph { transform: rotate(0); }
-  .theme-toggle[data-preference='dark'] .theme-glyph { transform: rotate(180deg); }
+  .theme-icon { display: none; line-height: 0; }
+  .theme-toggle:not([data-preference]) .theme-icon-system,
+  .theme-toggle[data-preference='system'] .theme-icon-system,
+  .theme-toggle[data-preference='light'] .theme-icon-light,
+  .theme-toggle[data-preference='dark'] .theme-icon-dark { display: inline-flex; }
+  .theme-icon svg { width: 18px; height: 18px; stroke-linecap: round; stroke-linejoin: round; animation: theme-icon-enter var(--duration-fast) var(--ease-standard) both; }
   .mobile-menu { display: none; position: relative; }
   .mobile-menu summary { display: grid; width: 34px; height: 34px; padding: 9px; place-content: center; gap: 5px; border-radius: 50%; cursor: pointer; list-style: none; }
   .mobile-menu summary::-webkit-details-marker { display: none; }
-  .mobile-menu summary span { width: 16px; height: 1px; background: currentColor; transition: transform 160ms ease; }
+  .mobile-menu summary span { width: 16px; height: 1px; background: currentColor; transition: transform var(--duration-fast) var(--ease-standard); }
   .mobile-menu[open] summary span:first-child { transform: translateY(3px) rotate(45deg); }
   .mobile-menu[open] summary span:last-child { transform: translateY(-3px) rotate(-45deg); }
-  .mobile-menu nav { position: absolute; top: 44px; right: 0; width: 180px; padding: 8px; border: 1px solid var(--ring); border-radius: 10px; background: var(--paper-raised); box-shadow: var(--shadow); }
-  .mobile-menu nav a { display: block; padding: 10px 12px; border-radius: 6px; color: var(--n-7); font-size: 14px; text-decoration: none; }
-  .mobile-menu nav a:hover, .mobile-menu nav a[aria-current='page'] { color: var(--ume-ink); background: var(--ume-soft); }
+  .mobile-menu nav { position: absolute; top: 44px; right: 0; width: 180px; padding: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-bg-raised); box-shadow: var(--shadow-whisper); }
+  .mobile-menu nav a { display: flex; align-items: center; gap: 7px; padding: 10px 12px; border-radius: var(--radius-md); color: var(--color-text-secondary); font-size: var(--text-copy-14); text-decoration: none; }
+  .mobile-menu nav a:hover, .mobile-menu nav a[aria-current='page'] { color: var(--color-accent-ink); background: var(--color-accent-soft); }
+  @keyframes theme-icon-enter { from { opacity: 0; transform: scale(.82) rotate(-8deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
   @media (max-width: 760px) {
     .desktop-nav { display: none; }
     .mobile-menu { display: block; }
+    .wordmark-text { font-size: var(--text-title-20); }
   }
 </style>
