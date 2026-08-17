@@ -11,7 +11,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'pnpm run preview -- --host 127.0.0.1 --port 4321',
+    // Invoke Astro directly: an npm-style `--` separator reaches Astro when
+    // Playwright launches the command through a shell, so Linux ignores the
+    // host flag and binds to localhost instead of the polled IPv4 address.
+    command: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
     url: 'http://127.0.0.1:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
