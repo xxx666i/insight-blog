@@ -244,9 +244,8 @@ test('desktop navigation reveals item framing on hover and current state', async
   const idleBackground = await nextItem.evaluate((element) => getComputedStyle(element).backgroundColor);
   await expect(nextItem).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
   await nextItem.hover();
-  const hoverBackground = await nextItem.evaluate((element) => getComputedStyle(element).backgroundColor);
+  await expect(nextItem).not.toHaveCSS('background-color', idleBackground);
   const hoverBorder = await nextItem.evaluate((element) => getComputedStyle(element).borderTopColor);
-  expect(hoverBackground).not.toBe(idleBackground);
   expect(hoverBorder).not.toBe('rgba(0, 0, 0, 0)');
 
   const activeIndicator = await currentItem.evaluate((element) => {
