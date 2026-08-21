@@ -30,6 +30,11 @@
   --color-success: #5e9f7e;
   --color-warning: #a87a3d;
   --color-error: #a64953;
+  --color-home-hero-ume: var(--color-accent-ink);
+  --color-home-hero-amber: #93612c;
+  --color-home-hero-jade: #3f765f;
+  --color-home-hero-ocean: var(--color-info);
+  --color-home-hero-iris: #6d5792;
 
   /* Semantic color roles. */
   --color-bg-canvas: var(--color-paper);
@@ -46,6 +51,11 @@
   --color-overlay: rgb(28 22 24 / 54%);
   --color-search-highlight: color-mix(in srgb, var(--color-success) 38%, transparent);
   --color-search-highlight-edge: color-mix(in srgb, var(--color-success) 70%, transparent);
+  --color-text-interactive: var(--color-accent-ink);
+  --color-bg-interactive: color-mix(in srgb, var(--color-accent) 9%, var(--color-bg-raised));
+  --color-border-interactive: color-mix(in srgb, var(--color-accent) 42%, var(--color-border));
+  --color-scrollbar-thumb: color-mix(in srgb, var(--color-icon) 56%, transparent);
+  --color-scrollbar-thumb-hover: color-mix(in srgb, var(--color-accent) 78%, transparent);
 
   /* Font roles. Noto Serif SC is bundled by the application. */
   --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
@@ -169,6 +179,11 @@
   --color-success: #80b99d;
   --color-warning: #d0a15f;
   --color-error: #d2737d;
+  --color-home-hero-ume: #f0abb5;
+  --color-home-hero-amber: #e0ad72;
+  --color-home-hero-jade: #8bc7aa;
+  --color-home-hero-ocean: #91bceb;
+  --color-home-hero-iris: #baa7df;
   --color-border: rgb(255 255 255 / 12%);
   --color-overlay: rgb(0 0 0 / 70%);
   --shadow-whisper: 0 4px 24px rgb(0 0 0 / 12%);

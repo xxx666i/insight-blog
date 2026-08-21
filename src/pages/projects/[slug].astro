@@ -35,8 +35,8 @@ const { Content, headings } = await render(project);
   <Content />
   {(project.data.externalUrl || project.data.sourceUrl) && (
     <div class="project-links">
-      {project.data.externalUrl && <a href={project.data.externalUrl} target="_blank" rel="noreferrer">访问项目 ↗</a>}
-      {project.data.sourceUrl && <a href={project.data.sourceUrl} target="_blank" rel="noreferrer">查看源码 ↗</a>}
+      {project.data.externalUrl && <a href={project.data.externalUrl} target="_blank" rel="noreferrer">访问项目 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3 5 11"></path><path d="M11 9v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"></path></svg></a>}
+      {project.data.sourceUrl && <a href={project.data.sourceUrl} target="_blank" rel="noreferrer">查看源码 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3 5 11"></path><path d="M11 9v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"></path></svg></a>}
     </div>
   )}
 </ArticleLayout>
@@ -47,7 +47,8 @@ const { Content, headings } = await render(project);
   .project-facts dt { color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
   .project-facts dd { margin: 4px 0 0; color: var(--n-9); font-size: var(--text-copy-13); }
   .project-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 3em; padding-top: 2em; border-top: 1px solid var(--ring); }
-  .project-links a { padding: 8px 13px; border: 1px solid var(--ring); border-radius: 6px; color: var(--n-8); font-family: var(--font-sans); font-size: var(--text-label-12); text-decoration: none; }
-  .project-links a:hover { border-color: var(--ume); color: var(--ume-ink); }
+  .project-links a { display: inline-flex; min-height: 36px; padding: 8px 13px; align-items: center; gap: var(--space-2); border: 1px solid var(--ring); border-radius: 6px; color: var(--n-8); font-family: var(--font-sans); font-size: var(--text-label-12); text-decoration: none; }
+  .project-links a:hover { border-color: var(--color-border-interactive); color: var(--color-text-interactive); background: var(--color-bg-interactive); }
+  .project-links svg { width: var(--text-icon-sm); height: var(--text-icon-sm); fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.25; }
   @media (max-width: 520px) { .project-facts { grid-template-columns: 1fr; } }
 </style>

@@ -11,7 +11,18 @@ interface Props {
   title?: string;
 }
 
-const items = Astro.props.headings.filter((heading) => heading.depth === 2 && heading.text !== 'Footnotes');
+let sectionIndex = 0;
+const items = Astro.props.headings
+  .filter((heading) => (heading.depth === 2 || heading.depth === 3) && heading.text !== 'Footnotes')
+  .map((heading) => {
+    if (heading.depth === 2) {
+      sectionIndex += 1;
+    }
+    return {
+      ...heading,
+      label: heading.depth === 2 ? String(sectionIndex).padStart(2, '0') : undefined,
+    };
+  });
 const variant = Astro.props.variant ?? 'desktop';
 const title = Astro.props.title ?? '';
 ---
@@ -22,8 +33,8 @@ const title = Astro.props.title ?? '';
       <div class="toc-outline">
         <p class="toc-label">ON THIS PAGE</p>
         <ol>
-          {items.map((heading, index) => (
-            <li><a href={`#${heading.slug}`} data-toc-link={heading.slug}><span>{String(index + 1).padStart(2, '0')}</span>{heading.text}</a></li>
+          {items.map((heading) => (
+            <li class={`toc-depth-${heading.depth}`}><a href={`#${heading.slug}`} data-toc-link={heading.slug}>{heading.label && <span>{heading.label}</span>}{heading.text}</a></li>
           ))}
         </ol>
       </div>
@@ -45,8 +56,8 @@ const title = Astro.props.title ?? '';
       <details class="toc-mobile">
         <summary>文章目录 <span>{String(items.length).padStart(2, '0')}</span></summary>
         <ol>
-          {items.map((heading, index) => (
-            <li><a href={`#${heading.slug}`}><span>{String(index + 1).padStart(2, '0')}</span>{heading.text}</a></li>
+          {items.map((heading) => (
+            <li class={`toc-depth-${heading.depth}`}><a href={`#${heading.slug}`}>{heading.label && <span>{heading.label}</span>}{heading.text}</a></li>
           ))}
         </ol>
       </details>
@@ -116,10 +127,14 @@ const title = Astro.props.title ?? '';
   .toc { position: sticky; top: calc(var(--header-height) + 32px); align-self: start; max-height: calc(100vh - var(--header-height) - 64px); padding-left: 20px; overflow: auto; border-left: 1px solid var(--ring); }
   .toc-label { margin: 0 0 18px; color: var(--n-8); font-family: var(--font-mono); font-size: var(--text-label-12); font-weight: 600; letter-spacing: .08em; line-height: 1.5; }
   ol { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
+  li { min-width: 0; }
   a { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 6px; color: var(--n-8); font-size: var(--text-label-12); line-height: 1.5; text-decoration: none; transition: color var(--duration-fast) var(--ease-standard); }
   a span { color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; }
-  a:hover, a[aria-current] { color: var(--n-9); }
-  a[aria-current] span { color: var(--ume); }
+  a:hover, a[aria-current] { color: var(--color-text-interactive); }
+  a[aria-current] span { color: var(--color-text-interactive); }
+  .toc-depth-3 { position: relative; margin-left: var(--space-3); }
+  .toc-depth-3::before { position: absolute; top: .72em; left: 0; width: var(--space-2); height: 1px; background: var(--color-border); content: ''; }
+  .toc-depth-3 a { grid-template-columns: minmax(0, 1fr); padding-left: var(--space-4); color: var(--color-text-secondary); font-size: var(--text-label-12); }
   .toc-actions { display: grid; justify-items: start; gap: 6px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--ring); }
   .toc-action { display: flex; width: fit-content; min-width: 34px; min-height: 34px; padding: 6px 8px; align-items: center; gap: 0; overflow: hidden; border: 0; border-radius: var(--radius-md); color: var(--n-8); background: transparent; font-family: var(--font-sans); font-size: var(--text-copy-13); line-height: var(--text-copy-13--line-height); cursor: pointer; transition: color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard); }
   .toc-action:hover { color: var(--n-10); background: var(--n-1); }

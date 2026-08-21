@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveHeader from '../../components/ArchiveHeader.astro';
 import PostRow from '../../components/PostRow.astro';
 import TagList from '../../components/TagList.astro';
 import { getPosts, uniqueTags } from '../../lib/content';
@@ -10,38 +11,40 @@ const years = [...new Set(posts.map((post) => post.data.publishedAt.getFullYear(
 ---
 
 <BaseLayout title="文章" description="Xiaoxin 的长篇文章与写作档案。">
-  <div class="page-shell page-main">
-    <header class="archive-header" data-enter>
-      <div>
-        <p class="eyebrow">Writing archive</p>
-        <h1 class="page-title">文章</h1>
-        <p class="page-deck">把值得反复查看的思考写完整。按年份归档，也可以从标签进入。</p>
-      </div>
-      <p class="archive-count"><strong>{posts.length}</strong><span>篇公开文章</span></p>
-    </header>
+  <div class="page-shell page-main posts-page">
+    <ArchiveHeader
+      eyebrow="Writing archive"
+      title="文章"
+      description="把值得反复查看的思考写完整。按年份归档，也可以从标签进入。"
+      count={posts.length}
+      countUnit="篇"
+    />
     {tags.length > 0 && <div class="tag-filter"><span>FILTER</span><TagList tags={tags} /></div>}
     <div class="year-groups">
-      {years.map((year) => (
-        <section class="year-group" aria-labelledby={`year-${year}`}>
-          <h2 id={`year-${year}`}>{year}</h2>
-          <div>{posts.filter((post) => post.data.publishedAt.getFullYear() === year).map((post, index) => <PostRow post={post} index={index} />)}</div>
-        </section>
-      ))}
+      {years.map((year) => {
+        const yearPosts = posts.filter((post) => post.data.publishedAt.getFullYear() === year);
+        return (
+          <section class="year-group" aria-labelledby={`year-${year}`}>
+            <h2 id={`year-${year}`}>{year}</h2>
+            <div class:list={['post-timeline', { 'has-sequence': yearPosts.length > 1 }]}>
+              {yearPosts.map((post, index) => (
+                <PostRow post={post} index={index} timeline dateTimeline continues={index < yearPosts.length - 1} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .archive-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 50px; border-bottom: 1px solid var(--ring); }
-  .archive-count { display: flex; flex-direction: column; margin: 0; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); text-align: right; }
-  .archive-count strong { color: var(--n-10); font-family: var(--font-serif); font-size: 44px; font-weight: 500; line-height: 1; }
+  .posts-page { max-width: 1120px; }
   .tag-filter { display: flex; align-items: flex-start; gap: 22px; padding: 25px 0; border-bottom: 1px solid var(--ring); }
-  .tag-filter > span { padding-top: 9px; color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .1em; }
-  .year-group { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 28px; padding-top: 60px; }
+  .tag-filter > span { padding-top: var(--space-2); color: var(--color-text-strong-secondary); font-family: var(--font-mono); font-size: var(--text-label-12); font-weight: 600; letter-spacing: .08em; line-height: var(--text-label-12--line-height); }
+  .year-group { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 18px; padding-top: 60px; }
   .year-group h2 { position: sticky; top: calc(var(--header-height) + 24px); align-self: start; margin: 0; color: var(--n-7); font-family: var(--font-serif); font-size: var(--text-title-28); font-weight: 400; }
   @media (max-width: 620px) {
-    .archive-header { align-items: flex-start; }
-    .archive-count { display: none; }
     .year-group { grid-template-columns: 1fr; gap: 5px; }
     .year-group h2 { position: static; padding-bottom: 8px; border-bottom: 1px solid var(--ring); }
   }

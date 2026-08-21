@@ -8,6 +8,7 @@ import { withBase } from '../lib/url';
     <p>© {new Date().getFullYear()} {siteConfig.author}</p>
     <nav aria-label="页脚导航">
       {siteConfig.github && <a href={siteConfig.github} rel="me">GitHub</a>}
+      {siteConfig.bilibili && <a href={siteConfig.bilibili} rel="me noreferrer" target="_blank">bilibili</a>}
       <a href={withBase('rss.xml')}>RSS</a>
       {siteConfig.about.contact && <a href={`mailto:${siteConfig.about.contact}`}>邮箱</a>}
       <a href={withBase('about/')}>关于</a>
@@ -16,10 +17,15 @@ import { withBase } from '../lib/url';
 </footer>
 
 <style>
-  .site-footer { padding: 26px 0 42px; border-top: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .04em; }
+  .site-footer { flex: none; padding: 22px 0 28px; border-top: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); letter-spacing: .04em; line-height: var(--text-label-12--line-height); }
   .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
   .site-footer p { margin: 0; }
-  .site-footer nav { display: flex; gap: 22px; }
+  .site-footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
   .site-footer a { text-decoration: none; }
-  .site-footer a:hover { color: var(--ume-ink); }
+  .site-footer a:hover { color: var(--color-text-interactive); }
+  @media (max-width: 620px) {
+    .site-footer { padding-block: 20px 24px; }
+    .footer-inner { align-items: flex-start; flex-direction: column; gap: 12px; }
+    .site-footer nav { gap: 8px 16px; }
+  }
 </style>

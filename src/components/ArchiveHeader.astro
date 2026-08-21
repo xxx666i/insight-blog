@@ -1,0 +1,37 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  count: number;
+  countUnit: string;
+}
+
+const { eyebrow, title, description, count, countUnit } = Astro.props;
+---
+
+<header class="archive-header" data-enter>
+  <div class="archive-copy">
+    <p class="eyebrow">{eyebrow}</p>
+    <div class="archive-title-line">
+      <h1 class="page-title">{title}</h1>
+      <p class="archive-count" aria-label={`共 ${count} ${countUnit}`}>
+        <span>共</span><strong>{count}</strong><span>{countUnit}</span>
+      </p>
+    </div>
+    <p class="page-deck">{description}</p>
+  </div>
+</header>
+
+<style>
+  .archive-header { padding-bottom: var(--space-10); border-bottom: 1px solid var(--color-border); }
+  .archive-copy { min-width: 0; max-width: 760px; }
+  .archive-title-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-4); }
+  .archive-count { display: inline-flex; margin: 0; align-items: baseline; gap: var(--space-1); color: var(--color-text-secondary); font-size: var(--text-copy-13); line-height: var(--text-copy-13--line-height); white-space: nowrap; }
+  .archive-count strong { color: var(--color-text-strong-secondary); font-size: inherit; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 620px) {
+    .archive-header { padding-bottom: var(--space-8); }
+    .archive-title-line { column-gap: var(--space-3); }
+  }
+</style>

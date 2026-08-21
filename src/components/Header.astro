@@ -28,17 +28,36 @@ const isCurrent = (href: string) => href === '/'
       <button class="icon-button search-trigger" type="button" aria-label="打开搜索" title="搜索（Ctrl/⌘ K）">
         <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
       </button>
-      <button class="icon-button theme-toggle" type="button" aria-label="切换主题" title="切换主题">
-        <span class="theme-icon theme-icon-system" data-theme-icon="system" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="12.5" rx="2"></rect><path d="M8 20h8M12 16.5V20"></path></svg>
-        </span>
-        <span class="theme-icon theme-icon-light" data-theme-icon="light" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>
-        </span>
-        <span class="theme-icon theme-icon-dark" data-theme-icon="dark" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M20 15.4A8.4 8.4 0 0 1 8.6 4a8.4 8.4 0 1 0 11.4 11.4Z"></path></svg>
-        </span>
-      </button>
+      <div class="theme-picker" data-open="false">
+        <button class="icon-button theme-toggle" type="button" aria-label="选择主题" aria-haspopup="menu" aria-expanded="false" aria-controls="theme-menu" title="选择主题">
+          <span class="theme-icon theme-icon-system" data-theme-icon="system" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="12.5" rx="2"></rect><path d="M8 20h8M12 16.5V20"></path></svg>
+          </span>
+          <span class="theme-icon theme-icon-light" data-theme-icon="light" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>
+          </span>
+          <span class="theme-icon theme-icon-dark" data-theme-icon="dark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20 15.4A8.4 8.4 0 0 1 8.6 4a8.4 8.4 0 1 0 11.4 11.4Z"></path></svg>
+          </span>
+        </button>
+        <div class="theme-menu" id="theme-menu" role="menu" aria-label="选择主题">
+          <button class="theme-option" type="button" role="menuitemradio" aria-checked="false" data-theme-option="system">
+            <span class="theme-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="12.5" rx="2"></rect><path d="M8 20h8M12 16.5V20"></path></svg></span>
+            <span><strong>跟随系统</strong><small>随设备外观切换</small></span>
+            <span class="theme-option-check" aria-hidden="true"></span>
+          </button>
+          <button class="theme-option" type="button" role="menuitemradio" aria-checked="false" data-theme-option="light">
+            <span class="theme-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg></span>
+            <span><strong>浅色</strong><small>明亮纸张质感</small></span>
+            <span class="theme-option-check" aria-hidden="true"></span>
+          </button>
+          <button class="theme-option" type="button" role="menuitemradio" aria-checked="false" data-theme-option="dark">
+            <span class="theme-option-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 15.4A8.4 8.4 0 0 1 8.6 4a8.4 8.4 0 1 0 11.4 11.4Z"></path></svg></span>
+            <span><strong>深色</strong><small>低亮度阅读</small></span>
+            <span class="theme-option-check" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
       <details class="mobile-menu">
         <summary aria-label="打开导航"><span></span><span></span></summary>
         <nav aria-label="移动端导航">
@@ -55,32 +74,72 @@ const isCurrent = (href: string) => href === '/'
 
 <script>
   const root = document.documentElement;
+  const themePicker = document.querySelector<HTMLElement>('.theme-picker');
   const themeButton = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const themeOptions = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-option]')];
   const media = matchMedia('(prefers-color-scheme: dark)');
   const labels = { system: '跟随系统', light: '浅色', dark: '深色' } as const;
+  type ThemePreference = keyof typeof labels;
 
-  function applyTheme(preference: keyof typeof labels) {
+  function setThemeMenu(open: boolean) {
+    if (!themePicker || !themeButton) return;
+    themePicker.dataset.open = String(open);
+    themeButton.ariaExpanded = String(open);
+  }
+
+  function applyTheme(preference: ThemePreference) {
     const resolved = preference === 'system' ? (media.matches ? 'dark' : 'light') : preference;
     root.dataset.themePreference = preference;
     root.dataset.theme = resolved;
     if (themeButton) {
       themeButton.dataset.preference = preference;
-      themeButton.setAttribute('aria-label', `当前：${labels[preference]}。点击切换主题`);
+      themeButton.setAttribute('aria-label', `当前：${labels[preference]}。选择主题`);
       themeButton.title = `主题：${labels[preference]}`;
+    }
+    themeOptions.forEach((option) => option.setAttribute('aria-checked', String(option.dataset.themeOption === preference)));
+  }
+
+  function selectTheme(preference: ThemePreference) {
+    localStorage.setItem('insight-blog-theme', preference);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'startViewTransition' in document) {
+      document.startViewTransition(() => applyTheme(preference));
+    } else {
+      applyTheme(preference);
     }
   }
 
-  applyTheme((localStorage.getItem('insight-blog-theme') as keyof typeof labels) || 'system');
+  applyTheme((localStorage.getItem('insight-blog-theme') as ThemePreference) || 'system');
 
   themeButton?.addEventListener('click', () => {
-    const current = (root.dataset.themePreference || 'system') as keyof typeof labels;
-    const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
-    localStorage.setItem('insight-blog-theme', next);
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'startViewTransition' in document) {
-      document.startViewTransition(() => applyTheme(next));
-    } else {
-      applyTheme(next);
+    setThemeMenu(true);
+  });
+
+  themeOptions.forEach((option) => option.addEventListener('click', () => {
+    const preference = option.dataset.themeOption as ThemePreference;
+    selectTheme(preference);
+    themeButton?.focus({ preventScroll: true });
+    setThemeMenu(false);
+  }));
+
+  const hoverQuery = matchMedia('(hover: hover)');
+  themePicker?.addEventListener('pointerenter', () => {
+    if (hoverQuery.matches) setThemeMenu(true);
+  });
+  themePicker?.addEventListener('pointerleave', () => {
+    if (hoverQuery.matches && !themePicker.contains(document.activeElement)) setThemeMenu(false);
+  });
+  themePicker?.addEventListener('focusin', () => setThemeMenu(true));
+  themePicker?.addEventListener('focusout', (event) => {
+    if (!(event.relatedTarget instanceof Node) || !themePicker.contains(event.relatedTarget)) setThemeMenu(false);
+  });
+  themePicker?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setThemeMenu(false);
+      themeButton?.focus({ preventScroll: true });
     }
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (event.target instanceof Node && !themePicker?.contains(event.target)) setThemeMenu(false);
   });
 
   media.addEventListener('change', () => {
@@ -108,20 +167,33 @@ const isCurrent = (href: string) => href === '/'
   .wordmark-text { font-family: var(--font-wordmark); font-size: var(--text-title-20); font-weight: 500; letter-spacing: -.045em; }
   .desktop-nav { display: flex; align-items: center; gap: 3px; margin-right: 22px; padding: 3px; border: 0; border-radius: var(--radius-lg); }
   .desktop-nav a { position: relative; display: inline-flex; min-height: 30px; padding: 5px 10px; align-items: center; border: 1px solid transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); font-size: var(--text-copy-13); text-decoration: none; transition: color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard); }
-  .desktop-nav a:hover, .desktop-nav a:focus-visible { border-color: var(--color-border); color: var(--color-text-heading); background: var(--color-bg-subtle); }
+  .desktop-nav a:hover, .desktop-nav a:focus-visible { border-color: var(--color-border-interactive); color: var(--color-text-interactive); background: var(--color-bg-interactive); }
   .desktop-nav a:focus-visible { outline-offset: 1px; }
-  .desktop-nav a[aria-current='page'] { border-color: var(--color-border); color: var(--color-text-heading); background: var(--color-bg-raised); }
-  .desktop-nav a[aria-current='page']::after { position: absolute; right: 10px; bottom: 2px; left: 10px; height: 1px; background: var(--color-accent); content: ''; }
+  .desktop-nav a[aria-current='page'] { border-color: var(--color-border-interactive); color: var(--color-text-interactive); background: var(--color-bg-interactive); }
+  .desktop-nav a[aria-current='page']::after { position: absolute; right: 10px; bottom: 2px; left: 10px; height: 1px; background: var(--color-text-interactive); content: ''; }
   .header-actions { display: flex; align-items: center; gap: 5px; }
   .icon-button { display: grid; width: 34px; height: 34px; padding: 0; place-items: center; border: 0; border-radius: 50%; color: var(--color-text-secondary); background: transparent; cursor: pointer; }
   .icon-button:hover { color: var(--color-text-heading); background: var(--color-bg-subtle); }
   .icon-button svg { width: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  .theme-picker { position: relative; display: grid; place-items: center; }
   .theme-icon { display: none; line-height: 0; }
-  .theme-toggle:not([data-preference]) .theme-icon-system,
-  .theme-toggle[data-preference='system'] .theme-icon-system,
-  .theme-toggle[data-preference='light'] .theme-icon-light,
-  .theme-toggle[data-preference='dark'] .theme-icon-dark { display: inline-flex; }
-  .theme-icon svg { width: 18px; height: 18px; stroke-linecap: round; stroke-linejoin: round; animation: theme-icon-enter var(--duration-fast) var(--ease-standard) both; }
+  :root[data-theme-preference='system'] .theme-icon-system,
+  :root[data-theme-preference='light'] .theme-icon-light,
+  :root[data-theme-preference='dark'] .theme-icon-dark { display: inline-flex; }
+  .theme-icon svg { width: 18px; height: 18px; stroke-linecap: round; stroke-linejoin: round; }
+  .theme-menu { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 4; display: grid; width: 188px; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-xl); opacity: 0; visibility: hidden; background: var(--color-bg-raised); box-shadow: var(--shadow-overlay); transform: translateY(-4px); transform-origin: top right; pointer-events: none; transition: opacity var(--duration-fast) var(--ease-standard), visibility var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
+  .theme-menu::before { position: absolute; right: 0; bottom: 100%; left: 0; height: var(--space-2); content: ''; }
+  .theme-picker[data-open='true'] .theme-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+  .theme-option { display: grid; grid-template-columns: 24px minmax(0, 1fr) 8px; width: 100%; padding: 9px 10px; align-items: center; gap: var(--space-2); border: 0; border-radius: var(--radius-md); color: var(--color-text-secondary); background: transparent; text-align: left; cursor: pointer; }
+  .theme-option:hover, .theme-option:focus-visible { color: var(--color-text-heading); background: var(--color-bg-subtle); outline: 0; }
+  .theme-option[aria-checked='true'] { color: var(--color-accent-ink); background: var(--color-accent-soft); }
+  .theme-option-icon { display: grid; width: 24px; height: 24px; place-items: center; }
+  .theme-option-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+  .theme-option strong, .theme-option small { display: block; }
+  .theme-option strong { font-family: var(--font-sans); font-size: var(--text-copy-13); font-weight: 500; line-height: var(--text-copy-13--line-height); }
+  .theme-option small { margin-top: 1px; color: var(--color-text-muted); font-family: var(--font-sans); font-size: var(--text-caption-10); line-height: 1.45; }
+  .theme-option-check { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+  .theme-option[aria-checked='true'] .theme-option-check { background: var(--color-accent); }
   .mobile-menu { display: none; position: relative; }
   .mobile-menu summary { display: grid; width: 34px; height: 34px; padding: 9px; place-content: center; gap: 5px; border-radius: 50%; cursor: pointer; list-style: none; }
   .mobile-menu summary::-webkit-details-marker { display: none; }
@@ -130,8 +202,8 @@ const isCurrent = (href: string) => href === '/'
   .mobile-menu[open] summary span:last-child { transform: translateY(-3px) rotate(-45deg); }
   .mobile-menu nav { position: absolute; top: 44px; right: 0; width: 180px; padding: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-bg-raised); box-shadow: var(--shadow-whisper); }
   .mobile-menu nav a { display: flex; align-items: center; gap: 7px; padding: 10px 12px; border-radius: var(--radius-md); color: var(--color-text-secondary); font-size: var(--text-copy-14); text-decoration: none; }
-  .mobile-menu nav a:hover, .mobile-menu nav a[aria-current='page'] { color: var(--color-accent-ink); background: var(--color-accent-soft); }
-  @keyframes theme-icon-enter { from { opacity: 0; transform: scale(.82) rotate(-8deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+  .mobile-menu nav a:hover { color: var(--color-text-interactive); background: var(--color-bg-interactive); }
+  .mobile-menu nav a[aria-current='page'] { color: var(--color-text-interactive); background: var(--color-bg-interactive); }
   @media (max-width: 760px) {
     .desktop-nav { display: none; }
     .mobile-menu { display: block; }
