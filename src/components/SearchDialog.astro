@@ -213,13 +213,14 @@ import { withBase } from '../lib/url';
   .search-tags { display: flex; max-width: 100%; max-height: 35px; padding: 1px 1px 5px; overflow: hidden; flex-wrap: nowrap; gap: 8px; mask-image: linear-gradient(to right, black 0, black calc(100% - 28px), transparent 100%); }
   .search-tags[data-expanded='true'] { max-height: 112px; padding-right: 4px; overflow-y: auto; flex-wrap: wrap; mask-image: none; }
   .search-tags :global(button) { display: inline-flex; flex: none; min-height: 30px; padding: 4px 9px; align-items: center; gap: 7px; border: 1px solid color-mix(in srgb, var(--color-icon) 30%, transparent); border-radius: var(--radius-md); color: var(--color-text-strong-secondary); background: color-mix(in srgb, var(--color-bg-hover) 64%, transparent); font-family: var(--font-sans); font-size: var(--text-label-12); cursor: pointer; transition: border-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
-  .search-tags :global(button:hover), .search-tags :global(button:focus-visible) { border-color: color-mix(in srgb, var(--ume) 58%, transparent); color: var(--ume-ink); background: var(--ume-soft); transform: translateY(-1px); }
+  .search-tags :global(button:hover), .search-tags :global(button:focus-visible) { border-color: var(--color-border-interactive); color: var(--color-text-interactive); background: var(--color-bg-interactive); transform: translateY(-1px); }
   .search-tags :global(small) { color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); }
   .search-status { margin-top: 16px; }
   .search-results { min-height: 0; max-height: 452px; margin: 0 -8px; padding: 0 8px; overflow: auto; list-style: none; }
   .search-results :global(li + li) { border-top: 1px solid var(--ring); }
   .search-results :global(a) { display: grid; gap: 2px; padding: 13px 8px; border-radius: 6px; text-decoration: none; }
-  .search-results :global(a:hover), .search-results :global(a:focus) { background: var(--n-1); outline-offset: -2px; }
+  .search-results :global(a:hover), .search-results :global(a:focus) { background: var(--color-bg-interactive); outline-offset: -2px; }
+  .search-results :global(a:hover strong), .search-results :global(a:focus strong) { color: var(--color-text-interactive); }
   .search-results :global(.result-meta) { color: var(--ume-ink); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .06em; }
   .search-results :global(strong) { font-family: var(--font-serif); font-size: var(--text-copy-16); font-weight: 500; }
   .search-results :global(.result-text) { color: var(--n-7); font-size: var(--text-label-12); }

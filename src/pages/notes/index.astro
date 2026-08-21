@@ -1,27 +1,135 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import NoteItem from '../../components/NoteItem.astro';
+import ArchiveHeader from '../../components/ArchiveHeader.astro';
+import NoteTimelineItem from '../../components/NoteTimelineItem.astro';
 import { getNotes } from '../../lib/content';
 
 const notes = await getNotes();
+const noteGroups = notes.reduce<Array<{ year: number; entries: typeof notes }>>((groups, note) => {
+  const year = note.data.publishedAt.getUTCFullYear();
+  const current = groups.at(-1);
+  if (current?.year === year) {
+    current.entries.push(note);
+  } else {
+    groups.push({ year, entries: [note] });
+  }
+  return groups;
+}, []);
 ---
 
 <BaseLayout title="随记" description="Xiaoxin 的短记、片段与即时观察。">
   <div class="page-shell page-main notes-page">
-    <header data-enter>
-      <p class="eyebrow">Notes in passing</p>
-      <h1 class="page-title">随记</h1>
-      <p class="page-deck">不必都长成一篇文章。这里保存那些正在发生、值得留下的片段。</p>
-    </header>
-    <div class="notes-rule"><span>{String(notes.length).padStart(2, '0')} ENTRIES</span></div>
-    <section aria-label="全部随记">
-      {notes.map((note) => <NoteItem note={note} />)}
+    <ArchiveHeader
+      eyebrow="Notes in passing"
+      title="随记"
+      description="不必都长成一篇文章。这里保存那些正在发生、值得留下的片段。"
+      count={notes.length}
+      countUnit="条"
+    />
+    <div class="notes-chronology" aria-label="按时间排列的全部随记">
+      {noteGroups.map(({ year, entries }) => (
+        <section class="note-year-group" aria-labelledby={`notes-year-${year}`}>
+          <header class="note-year-header">
+            <h2 id={`notes-year-${year}`}>{year}</h2>
+            <span class="year-count"><strong>{entries.length}</strong>条</span>
+          </header>
+          <div class="note-timeline">
+            <span class="note-timeline-line" aria-hidden="true"></span>
+            {entries.map((note) => <NoteTimelineItem note={note} />)}
+          </div>
+        </section>
+      ))}
       {!notes.length && <p class="empty-state">还没有公开随记。</p>}
-    </section>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
-  .notes-page > header { max-width: 720px; }
-  .notes-rule { display: flex; justify-content: flex-end; margin-top: 54px; padding-bottom: 12px; border-bottom: 1px solid var(--ring); color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
+  .notes-page {
+    max-width: 1120px;
+  }
+
+  .notes-chronology {
+    margin-top: var(--space-10);
+  }
+
+  .note-year-group + .note-year-group {
+    margin-top: var(--space-12);
+  }
+
+  .note-year-header {
+    display: flex;
+    padding: 0 0 var(--space-4);
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .note-year-header h2,
+  .note-year-header > span {
+    margin: 0;
+  }
+
+  .note-year-header > span {
+    color: var(--color-text-secondary);
+    font-family: var(--font-sans);
+    font-size: var(--text-copy-13);
+    font-weight: 400;
+    line-height: var(--text-copy-13--line-height);
+  }
+
+  .note-year-header h2 {
+    color: var(--n-7);
+    font-family: var(--font-serif);
+    font-size: var(--text-title-28);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .note-year-header > span {
+    padding-bottom: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year-count strong {
+    color: var(--color-text-strong-secondary);
+    font-size: inherit;
+    font-weight: 500;
+  }
+
+  .note-timeline {
+    position: relative;
+    padding-top: var(--space-6);
+  }
+
+  .note-timeline-line {
+    position: absolute;
+    top: var(--space-6);
+    bottom: var(--space-5);
+    left: 96px;
+    display: block;
+    width: 1px;
+    background: var(--color-border);
+  }
+
+  @media (max-width: 680px) {
+    .notes-chronology {
+      margin-top: var(--space-8);
+    }
+
+    .note-year-group + .note-year-group {
+      margin-top: var(--space-10);
+    }
+
+    .note-timeline {
+      padding-top: var(--space-5);
+    }
+
+    .note-timeline-line {
+      top: var(--space-5);
+      bottom: var(--space-4);
+      left: 64px;
+    }
+  }
 </style>

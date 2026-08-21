@@ -7,37 +7,58 @@ import TagList from './TagList.astro';
 interface Props {
   post: CollectionEntry<'posts'>;
   index?: number;
+  timeline?: boolean;
+  dateTimeline?: boolean;
+  continues?: boolean;
 }
 
-const { post, index } = Astro.props;
+const { post, index, timeline = false, dateTimeline = false, continues = false } = Astro.props;
+const timelineDate = `${String(post.data.publishedAt.getUTCMonth() + 1).padStart(2, '0')}/${String(post.data.publishedAt.getUTCDate()).padStart(2, '0')}`;
 ---
 
-<article class="post-row">
-  {index !== undefined && <span class="row-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>}
+<article class:list={['post-row', { timeline, 'date-timeline': dateTimeline, continues }]}>
+  {timeline && dateTimeline ? (
+    <time class="timeline-date" datetime={post.data.publishedAt.toISOString()}>{timelineDate}</time>
+  ) : (
+    index !== undefined && <span class="row-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+  )}
   <div class="post-main">
     <div class="meta-row">
-      <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+      <time class="post-date" datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
       {post.data.draft && <span class="draft-mark">草稿</span>}
     </div>
     <h3><a href={withBase(`posts/${post.id}/`)}>{post.data.title}</a></h3>
     <p>{post.data.description}</p>
     <TagList tags={post.data.tags} />
   </div>
-  <a class="row-arrow" href={withBase(`posts/${post.id}/`)} aria-label={`阅读《${post.data.title}》`}>↗</a>
 </article>
 
 <style>
-  .post-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 18px; padding: 28px 0 30px; border-bottom: 1px solid var(--ring); }
+  .post-row { position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 18px; padding: 28px 0 30px; border-bottom: 1px solid var(--ring); transition: background var(--duration-fast) var(--ease-standard); }
   .row-index { padding-top: 4px; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; }
   .post-main h3 { margin: 8px 0 7px; color: var(--n-10); font-family: var(--font-serif); font-size: clamp(21px, 3vw, 29px); font-weight: 500; line-height: 1.25; letter-spacing: -.02em; }
-  .post-main h3 a { text-decoration: none; background: linear-gradient(var(--ume), var(--ume)) 0 100% / 0 1px no-repeat; transition: background-size 220ms ease; }
-  .post-row:hover h3 a { background-size: 100% 1px; }
+  .post-main h3 a { text-decoration: none; background: linear-gradient(var(--color-text-interactive), var(--color-text-interactive)) 0 100% / 0 1px no-repeat; transition: color var(--duration-fast) var(--ease-standard), background-size 220ms ease; }
+  .post-main h3 a::after { position: absolute; inset: 0; content: ''; }
+  .post-main h3 a:focus-visible { outline: 0; }
+  .post-row:hover h3 a, .post-main h3 a:focus-visible { color: var(--color-text-interactive); background-size: 100% 1px; }
+  .post-row:has(h3 a:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 3px; }
   .post-main > p { max-width: 660px; margin: 0 0 15px; color: var(--n-8); font-size: var(--text-copy-14); }
-  .row-arrow { align-self: center; width: 34px; height: 34px; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-copy-16); text-align: center; text-decoration: none; transition: color 160ms ease, transform 160ms ease; }
-  .post-row:hover .row-arrow { color: var(--ume); transform: translate(2px, -2px); }
+  .post-main :global(.tag-list) { position: relative; z-index: 1; width: fit-content; }
   .draft-mark { color: var(--ume-ink); }
+  .timeline { grid-template-columns: 24px minmax(0, 1fr); gap: 14px; border-bottom: 0; }
+  .timeline .row-index { position: relative; z-index: 1; display: inline-flex; width: 16px; height: 22px; padding-top: 0; align-self: start; align-items: center; justify-content: flex-start; background: var(--color-bg-canvas); }
+  .date-timeline { grid-template-columns: 54px minmax(0, 1fr); }
+  .timeline-date { align-self: start; padding-right: 12px; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; line-height: 1.5; text-align: right; white-space: nowrap; }
+  .date-timeline .post-date { display: none; }
+  .continues::before { position: absolute; top: 39px; left: 22px; display: block; width: 1px; height: 100%; background: var(--color-border); content: ''; }
+  .timeline::after { position: absolute; top: 35px; left: 18px; z-index: 1; display: block; width: 9px; height: 9px; border: 2px solid var(--color-bg-canvas); border-radius: 50%; background: var(--color-icon); box-shadow: 0 0 0 1px var(--color-border); content: ''; transition: background var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+  .date-timeline.continues::before { top: 37px; left: 54px; }
+  .date-timeline::after { top: 33px; left: 50px; }
+  .timeline:hover::after, .timeline:has(h3 a:focus-visible)::after { background: var(--color-accent); box-shadow: 0 0 0 3px var(--color-focus-ring); }
   @media (max-width: 560px) {
-    .post-row { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
-    .row-index { display: none; }
+    .post-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .row-index, .timeline-date { display: none; }
+    .date-timeline .post-date { display: inline; }
+    .continues::before, .timeline::after { display: none; }
   }
 </style>

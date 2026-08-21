@@ -5,6 +5,7 @@ export const siteConfig = {
   lang: 'zh-CN',
   author: 'Xiaoxin',
   github: 'https://github.com/xxx666i/insight-blog',
+  bilibili: 'https://space.bilibili.com/19556203?spm_id_from=333.1007.0.0',
   avatar: 'profile.jpg',
   about: {
     intro: '这里是 Xiaoxin 的长期个人档案。文章、短记和项目都通过 Git 留下清晰的版本与上下文。',

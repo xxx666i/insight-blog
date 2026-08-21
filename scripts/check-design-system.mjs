@@ -22,6 +22,8 @@ const requiredTokens = [
   '--color-border',
   '--color-overlay',
   '--color-search-highlight',
+  '--color-text-interactive',
+  '--color-scrollbar-thumb',
   '--color-accent',
   '--color-info',
   '--color-success',

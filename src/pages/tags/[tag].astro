@@ -27,10 +27,9 @@ const tags = uniqueTags([...posts, ...notes, ...projects]);
     <div class="tag-switcher"><a class="tag all-tags" href={withBase('tags/')}>全部</a><TagList tags={tags} current={tag} /></div>
     <section class="tag-results" aria-label={`${tag} 标签内容`}>
       {items.map((item, index) => (
-        <article>
+        <article class="tag-result">
           <span>{String(index + 1).padStart(2, '0')}</span>
           <div><p>{item.type} · {formatDate(item.entry.data.publishedAt)}</p><h2><a href={withBase(item.href)}>{item.title}</a></h2><p>{item.text.slice(0, 130)}</p></div>
-          <a href={withBase(item.href)} aria-label={`打开${item.title}`}>↗</a>
         </article>
       ))}
     </section>
@@ -39,13 +38,20 @@ const tags = uniqueTags([...posts, ...notes, ...projects]);
 
 <style>
   .tag-page { max-width: 940px; }
-  .tag-switcher { display: flex; align-items: flex-start; gap: 8px; margin-top: 48px; padding-bottom: 22px; border-bottom: 1px solid var(--ring); }
+  .tag-switcher { display: flex; align-items: flex-start; gap: var(--space-2); margin-top: var(--space-12); padding-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); }
+  .tag-switcher :global(.tag-list) { gap: var(--space-2); }
+  .tag-switcher :global(.tag) { min-height: var(--space-8); padding: var(--space-1) 10px; color: var(--color-text-strong-secondary); background: var(--color-bg-raised); font-size: var(--text-copy-13); line-height: var(--text-copy-13--line-height); }
   .all-tags { flex: none; }
-  .tag-results article { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 18px; padding: 27px 0; border-bottom: 1px solid var(--ring); }
-  .tag-results article > span { color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); }
-  .tag-results article > div > p:first-child { margin: 0; color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); }
-  .tag-results h2 { margin: 5px 0; font-family: var(--font-serif); font-size: var(--text-title-20); font-weight: 500; }
-  .tag-results h2 a { text-decoration: none; }
-  .tag-results article > div > p:last-child { margin: 0; color: var(--n-7); font-size: var(--text-copy-13); }
-  .tag-results article > a { color: var(--n-6); text-decoration: none; }
+  .tag-result { position: relative; display: grid; grid-template-columns: 34px minmax(0,1fr); gap: var(--space-5); padding: 28px var(--space-3); margin-inline: calc(var(--space-3) * -1); border-bottom: 1px solid var(--color-border); border-radius: var(--radius-md); transition: background var(--duration-fast) var(--ease-standard); }
+  .tag-result:hover { background: var(--color-bg-interactive); }
+  .tag-result > span { padding-top: 2px; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: var(--text-label-12); font-weight: 500; line-height: var(--text-label-12--line-height); }
+  .tag-result > div > p:first-child { margin: 0; color: var(--color-text-strong-secondary); font-family: var(--font-mono); font-size: var(--text-label-12); font-weight: 500; line-height: var(--text-label-12--line-height); }
+  .tag-results h2 { margin: var(--space-1) 0; color: var(--color-text-heading); font-family: var(--font-serif); font-size: var(--text-title-20); font-weight: 500; line-height: var(--text-title-20--line-height); }
+  .tag-results h2 a { text-decoration: none; transition: color var(--duration-fast) var(--ease-standard); }
+  .tag-results h2 a::after { position: absolute; inset: 0; content: ''; }
+  .tag-results h2 a:focus-visible { outline: 0; }
+  .tag-result:hover h2 a, .tag-results h2 a:focus-visible { color: var(--color-text-interactive); }
+  .tag-result:has(h2 a:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .tag-result > div > p:last-child { margin: 0; color: var(--color-text-strong-secondary); font-size: var(--text-copy-14); line-height: var(--text-copy-14--line-height); }
+  @media (max-width: 560px) { .tag-result { grid-template-columns: 1fr; } .tag-result > span { display: none; } }
 </style>

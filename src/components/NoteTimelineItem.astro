@@ -1,0 +1,233 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { excerpt } from '../lib/content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  note: CollectionEntry<'notes'>;
+}
+
+const { note } = Astro.props;
+const publishedAt = note.data.publishedAt;
+const href = withBase(`notes/${note.id}/`);
+const day = String(publishedAt.getUTCDate()).padStart(2, '0');
+const month = new Intl.DateTimeFormat('zh-CN', {
+  month: 'long',
+  timeZone: 'UTC',
+}).format(publishedAt);
+const weekday = new Intl.DateTimeFormat('zh-CN', {
+  weekday: 'short',
+  timeZone: 'UTC',
+}).format(publishedAt);
+const summary = excerpt(note.body, 168);
+---
+
+<article class:list={['note-timeline-item', { untitled: !note.data.title }]}>
+  <time class="note-timeline-date" datetime={publishedAt.toISOString()}>
+    <span class="date-context">
+      <span class="date-month">{month}</span>
+      <span class="date-weekday">{weekday}</span>
+    </span>
+    <span class="date-day">{day}</span>
+  </time>
+
+  <div class="note-letter">
+    {note.data.title ? (
+      <h3><a class="note-letter-link" href={href}>{note.data.title}</a></h3>
+    ) : (
+      <a class="note-letter-link untitled-link" href={href} aria-label="阅读这条无题随记"></a>
+    )}
+    <p class="note-letter-copy">{summary}</p>
+  </div>
+</article>
+
+<style>
+  .note-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-bottom: var(--space-5);
+  }
+
+  .note-timeline-item::before {
+    position: absolute;
+    top: 26px;
+    left: 92px;
+    z-index: 1;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--color-bg-canvas);
+    border-radius: 50%;
+    background: var(--color-icon);
+    box-shadow: 0 0 0 1px var(--color-border);
+    content: '';
+    transition: background var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  .note-timeline-date {
+    display: flex;
+    align-self: start;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-3) 0 0;
+    color: var(--color-text-strong-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .date-context {
+    display: grid;
+    justify-items: end;
+  }
+
+  .date-month,
+  .date-weekday {
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption-10);
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .date-weekday {
+    color: var(--color-text-interactive);
+  }
+
+  .date-day {
+    color: var(--n-7);
+    font-family: var(--font-serif);
+    font-size: var(--text-title-28);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .note-letter {
+    position: relative;
+    min-height: 132px;
+    padding: var(--space-5) var(--space-6) var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-raised);
+    box-shadow: var(--shadow-whisper);
+    transition:
+      border-color 180ms ease,
+      transform 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .note-letter h3 {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text-heading);
+    font-family: var(--font-serif);
+    font-size: var(--text-title-20);
+    font-weight: 500;
+    line-height: var(--text-title-20--line-height);
+  }
+
+  .note-letter-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .note-letter-link::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+  }
+
+  .note-letter-link:focus-visible {
+    outline: 0;
+  }
+
+  .untitled-link {
+    display: block;
+    height: 0;
+  }
+
+  .note-letter-copy {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    color: var(--color-text-strong-secondary);
+    font-size: var(--text-copy-15);
+    line-height: 1.75;
+    transition: color var(--duration-fast) var(--ease-standard);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .note-timeline-item:hover .note-letter,
+  .note-timeline-item:has(.note-letter-link:focus-visible) .note-letter {
+    border-color: color-mix(in srgb, var(--ume) 45%, var(--ring));
+    background: var(--paper-raised);
+    box-shadow: var(--shadow);
+  }
+
+  .note-timeline-item:hover .note-letter {
+    transform: translateY(-2px);
+  }
+
+  .note-timeline-item:hover::before,
+  .note-timeline-item:has(.note-letter-link:focus-visible)::before {
+    background: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+  }
+
+  .note-timeline-item:hover .note-letter-link,
+  .note-timeline-item:has(.note-letter-link:focus-visible) .note-letter-link,
+  .untitled:hover .note-letter-copy,
+  .untitled:has(.note-letter-link:focus-visible) .note-letter-copy {
+    color: var(--color-text-interactive);
+  }
+
+  .note-timeline-item:has(.note-letter-link:focus-visible) .note-letter {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 680px) {
+    .note-timeline-item {
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: var(--space-4);
+      padding-bottom: var(--space-4);
+    }
+
+    .note-timeline-item::before {
+      top: 20px;
+      left: 60px;
+      width: 8px;
+      height: 8px;
+    }
+
+    .note-timeline-date {
+      gap: 3px;
+      padding: var(--space-3) 5px 0 0;
+      text-align: right;
+    }
+
+    .date-day {
+      display: block;
+      font-size: var(--text-title-24);
+    }
+
+    .note-letter {
+      min-height: 0;
+      padding: var(--space-4);
+    }
+
+    .note-letter h3 {
+      font-size: var(--text-title-20);
+    }
+
+    .note-letter-copy {
+      font-size: var(--text-copy-14);
+      line-height: 1.7;
+      -webkit-line-clamp: 4;
+    }
+  }
+</style>

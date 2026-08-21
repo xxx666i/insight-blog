@@ -27,7 +27,10 @@ metadata. Clarity wins over decoration.
    paired line-height token. Chinese headings cap at weight `500`.
 3. Use the four-pixel spacing rhythm and the declared radius, blur, shadow, duration,
    and easing tokens instead of inventing nearby values.
-4. Accent is reserved for identity, focus, active state, and a small number of links.
+4. Accent is reserved for identity, focus, and selected state. Textual navigation,
+   content links, and clickable titles use the brand-ume
+   `--color-text-interactive` for hover and current feedback; icon-only controls may
+   move to the heading color instead.
 5. New cross-page patterns belong in `patterns.css`; page-specific composition stays
    beside the Astro page or component.
 6. Do not import or modify the reference `design-system/` to solve an application-only

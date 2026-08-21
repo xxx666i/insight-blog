@@ -42,13 +42,19 @@ const related = relatedPosts(post, posts);
     <footer class="post-footer page-shell">
       {post.data.codeLicense && <p class="code-license">本文代码示例许可：{post.data.codeLicense}</p>}
       {(newer || older) && (
-        <nav class="post-pagination" aria-label="相邻文章">
-          <div>
-            {newer && <><span>上一篇</span><a href={withBase(`posts/${newer.id}/`)}>{newer.data.title}</a></>}
-          </div>
-          <div class="next-post">
-            {older && <><span>下一篇</span><a href={withBase(`posts/${older.id}/`)}>{older.data.title}</a></>}
-          </div>
+        <nav class:list={['post-pagination', { 'single-post': !newer || !older }]} aria-label="相邻文章">
+          {newer && (
+            <a class="previous-post" href={withBase(`posts/${newer.id}/`)}>
+              <span class="pagination-label"><span class="pagination-arrow" aria-hidden="true">←</span>上一篇</span>
+              <strong>{newer.data.title}</strong>
+            </a>
+          )}
+          {older && (
+            <a class="next-post" href={withBase(`posts/${older.id}/`)}>
+              <span class="pagination-label">下一篇<span class="pagination-arrow" aria-hidden="true">→</span></span>
+              <strong>{older.data.title}</strong>
+            </a>
+          )}
         </nav>
       )}
       {related.length > 0 && (
@@ -62,17 +68,23 @@ const related = relatedPosts(post, posts);
 </ArticleLayout>
 
 <style>
-  .post-footer { display: grid; grid-template-columns: minmax(0, var(--article-content-width)) var(--article-sidebar-width); column-gap: var(--article-column-gap); max-width: var(--page-width); margin-top: 82px; justify-content: space-between; }
+  .post-footer { display: grid; grid-template-columns: minmax(0, 1fr) var(--article-sidebar-width); column-gap: var(--article-column-gap); max-width: 1120px; margin-top: var(--space-20); }
   .post-footer > * { grid-column: 1; }
   .code-license { padding: 13px 0; border-block: 1px solid var(--ring); color: var(--n-7); font-family: var(--font-mono); font-size: var(--text-caption-10); }
-  .post-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 56px; overflow: hidden; background: var(--ring); border: 1px solid var(--ring); border-radius: 8px; }
-  .post-pagination > div { min-height: 136px; padding: 24px; background: var(--paper); }
-  .post-pagination span { display: block; margin-bottom: 20px; color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
-  .post-pagination a { display: inline; color: var(--n-9); font-family: var(--font-serif); font-size: 18px; line-height: 1.5; text-decoration-color: transparent; }
-  .post-pagination a:hover { color: var(--ume-ink); text-decoration-color: var(--ume); }
+  .post-pagination { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-12); }
+  .post-pagination.single-post { grid-template-columns: minmax(0, 1fr); }
+  .post-pagination > a { display: grid; min-height: 124px; padding: var(--space-5) var(--space-6); align-content: space-between; border: 1px solid var(--color-border); border-radius: var(--radius-lg); color: var(--color-text-heading); background: var(--color-bg-raised); text-decoration: none; transition: border-color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
+  .post-pagination > a:hover { border-color: var(--color-border-interactive); color: var(--color-text-interactive); background: var(--color-bg-interactive); box-shadow: var(--shadow-whisper); transform: translateY(-2px); }
+  .post-pagination > a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .pagination-label { display: flex; margin-bottom: var(--space-5); align-items: center; gap: var(--space-2); color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+  .pagination-arrow { color: var(--color-accent); font-size: var(--text-copy-13); transition: transform var(--duration-fast) var(--ease-standard); }
+  .post-pagination strong { color: inherit; font-family: var(--font-serif); font-size: var(--text-title-20); font-weight: 400; line-height: 1.5; text-wrap: balance; }
+  .previous-post:hover .pagination-arrow { transform: translateX(-3px); }
   .next-post { text-align: right; }
+  .next-post .pagination-label { justify-content: flex-end; }
+  .next-post:hover .pagination-arrow { transform: translateX(3px); }
   .related { margin-top: 84px; }
   .related .section-heading > span { color: var(--n-6); font-family: var(--font-mono); font-size: var(--text-caption-10); letter-spacing: .08em; }
   @media (max-width: 980px) { .post-footer { display: block; max-width: var(--article-content-width); } }
-  @media (max-width: 600px) { .post-pagination { grid-template-columns: 1fr; } .next-post { text-align: left; } }
+  @media (max-width: 600px) { .post-pagination { grid-template-columns: 1fr; } .next-post { text-align: left; } .next-post .pagination-label { justify-content: flex-start; } }
 </style>
