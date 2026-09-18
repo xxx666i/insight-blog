@@ -17,18 +17,18 @@ import { withBase } from '../lib/url';
       </div>
     </header>
     <div class="about-grid">
-      <section>
+      <section data-reveal>
         <p class="section-number">01</p>
         <h2>现在关注</h2>
         <ul>{siteConfig.about.interests.map((item) => <li>{item}</li>)}</ul>
       </section>
-      <section>
+      <section data-reveal style="--enter-index: 1">
         <p class="section-number">02</p>
         <h2>做事原则</h2>
         <ol>{siteConfig.about.principles.map((item) => <li>{item}</li>)}</ol>
       </section>
       {siteConfig.about.contact && (
-        <section>
+        <section data-reveal>
           <p class="section-number">03</p>
           <h2>联系</h2>
           <p><a href={`mailto:${siteConfig.about.contact}`}>{siteConfig.about.contact}</a></p>

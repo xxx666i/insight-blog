@@ -122,6 +122,7 @@
   --duration-base: 200ms;
   --duration-slow: 560ms;
   --duration-theme: 720ms;
+  --duration-stagger: 70ms;
   --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-enter: cubic-bezier(0.2, 0.75, 0.25, 1);
   --ease-theme: cubic-bezier(0.76, 0, 0.24, 1);

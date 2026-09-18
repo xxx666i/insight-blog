@@ -87,6 +87,8 @@ const hasToc = headings.some((heading) => (heading.depth === 2 || heading.depth 
 </BaseLayout>
 
 <script>
+  import { showCopyFeedback } from '../lib/action-feedback';
+
   document.querySelectorAll<HTMLElement>('.prose pre.astro-code').forEach((pre) => {
     if (pre.parentElement?.classList.contains('code-frame')) return;
     const frame = document.createElement('div');
@@ -99,10 +101,14 @@ const hasToc = headings.some((heading) => (heading.depth === 2 || heading.depth 
     copy.type = 'button';
     copy.textContent = '复制';
     copy.setAttribute('aria-label', '复制代码');
+    copy.setAttribute('aria-live', 'polite');
     copy.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(pre.textContent || '');
-      copy.textContent = '已复制';
-      setTimeout(() => { copy.textContent = '复制'; }, 1400);
+      try {
+        await navigator.clipboard.writeText(pre.textContent || '');
+        showCopyFeedback(copy, true, '复制');
+      } catch {
+        showCopyFeedback(copy, false, '复制');
+      }
     });
     bar.append(title, copy);
     pre.before(frame);

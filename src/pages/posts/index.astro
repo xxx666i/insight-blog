@@ -26,7 +26,7 @@ const years = [...new Set(posts.map((post) => post.data.publishedAt.getFullYear(
         return (
           <section class="year-group" aria-labelledby={`year-${year}`}>
             <h2 id={`year-${year}`}>{year}</h2>
-            <div class:list={['post-timeline', { 'has-sequence': yearPosts.length > 1 }]}>
+            <div class:list={['post-timeline', { 'has-sequence': yearPosts.length > 1 }]} data-reveal>
               {yearPosts.map((post, index) => (
                 <PostRow post={post} index={index} timeline dateTimeline continues={index < yearPosts.length - 1} />
               ))}

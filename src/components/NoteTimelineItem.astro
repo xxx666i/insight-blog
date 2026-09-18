@@ -22,7 +22,7 @@ const weekday = new Intl.DateTimeFormat('zh-CN', {
 const summary = excerpt(note.body, 168);
 ---
 
-<article class:list={['note-timeline-item', { untitled: !note.data.title }]}>
+<article class:list={['note-timeline-item', { untitled: !note.data.title }]} data-reveal>
   <time class="note-timeline-date" datetime={publishedAt.toISOString()}>
     <span class="date-context">
       <span class="date-month">{month}</span>

@@ -30,24 +30,44 @@ const title = Astro.props.title ?? '';
 {variant === 'desktop' ? (
   <aside class:list={['toc', { 'has-items': items.length > 0 }]} aria-label={items.length > 0 ? '文章目录' : '文章操作'} data-article-title={title}>
     {items.length > 0 && (
-      <div class="toc-outline">
-        <p class="toc-label">ON THIS PAGE</p>
-        <ol>
-          {items.map((heading) => (
-            <li class={`toc-depth-${heading.depth}`}><a href={`#${heading.slug}`} data-toc-link={heading.slug}>{heading.label && <span>{heading.label}</span>}{heading.text}</a></li>
-          ))}
-        </ol>
+      <div class="toc-rail" aria-hidden="true">
+        <svg class="toc-thread" preserveAspectRatio="none">
+          <path class="toc-thread-track" />
+          <path class="toc-thread-progress" />
+          {items.map((heading) => <circle class="toc-thread-node" r={heading.depth === 2 ? 1.8 : 1.2} />)}
+        </svg>
+        <div class="toc-reading-label"><span data-reading-title></span><span data-reading-progress>0%</span></div>
       </div>
     )}
-    <div class="toc-actions" aria-label="点赞与分享">
-      <button class="toc-action" type="button" data-article-like aria-label="点赞本文" aria-pressed="false">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 21H4.8A1.8 1.8 0 0 1 3 19.2v-7.4A1.8 1.8 0 0 1 4.8 10h2.8m0 11V10l3.8-7a1.9 1.9 0 0 1 3.5 1.3L14 9h4.8a2.2 2.2 0 0 1 2.1 2.8l-2 7.3a2.6 2.6 0 0 1-2.5 1.9H7.6Z" /></svg>
-        <span class="action-count" data-like-count>0</span><span class="action-label">点赞</span>
-      </button>
-      <button class="toc-action" type="button" data-article-share aria-label="复制文章链接">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
-        <span class="action-label" data-share-label aria-live="polite">复制链接</span>
-      </button>
+    <div class="toc-panel">
+      {items.length > 0 && (
+        <div class="toc-outline">
+          <span class="toc-active-mark" aria-hidden="true"></span>
+          <p class="toc-label">ON THIS PAGE</p>
+          <ol>
+            {items.map((heading) => (
+              <li class={`toc-depth-${heading.depth}`}><a href={`#${heading.slug}`} data-toc-link={heading.slug}>{heading.label && <span>{heading.label}</span>}{heading.text}</a></li>
+            ))}
+          </ol>
+        </div>
+      )}
+      {items.length > 0 && (
+        <div class="toc-reading-meta">
+          <svg viewBox="0 0 140 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q17 0 35 6 T70 6 T105 6 T140 6" /></svg>
+          <p><span class="toc-progress-ring" aria-hidden="true"></span><span data-toc-progress>0%</span><span class="toc-progress-caption">已读</span></p>
+          <a class="toc-back-top" href="#main-content">↑ 返回顶部</a>
+        </div>
+      )}
+      <div class="toc-actions" aria-label="点赞与分享">
+        <button class="toc-action" type="button" data-article-like aria-label="点赞本文" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 21H4.8A1.8 1.8 0 0 1 3 19.2v-7.4A1.8 1.8 0 0 1 4.8 10h2.8m0 11V10l3.8-7a1.9 1.9 0 0 1 3.5 1.3L14 9h4.8a2.2 2.2 0 0 1 2.1 2.8l-2 7.3a2.6 2.6 0 0 1-2.5 1.9H7.6Z" /></svg>
+          <span class="action-count" data-like-count>0</span><span class="action-label">点赞</span>
+        </button>
+        <button class="toc-action" type="button" data-article-share aria-label="复制文章链接">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
+          <span class="action-label" data-share-label aria-live="polite">复制链接</span>
+        </button>
+      </div>
     </div>
   </aside>
 ) : (
@@ -76,17 +96,11 @@ const title = Astro.props.title ?? '';
 )}
 
 <script>
-  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
-  const headings = links.map((link) => document.getElementById(link.dataset.tocLink || '')).filter(Boolean) as HTMLElement[];
-  if (headings.length) {
-    const setActive = (id: string) => links.forEach((link) => link.toggleAttribute('aria-current', link.dataset.tocLink === id));
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-      if (visible[0]?.target.id) setActive(visible[0].target.id);
-    }, { rootMargin: '-18% 0px -70% 0px' });
-    headings.forEach((heading) => observer.observe(heading));
-    setActive(headings[0].id);
-  }
+  import { showCopyFeedback } from '../lib/action-feedback';
+  import { initReadingToc } from '../lib/reading-toc';
+
+  const toc = document.querySelector<HTMLElement>('.toc.has-items');
+  if (toc) initReadingToc(toc);
 
   const likeButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-article-like]')];
   const likeKey = `insight-like:${location.pathname}`;
@@ -99,32 +113,58 @@ const title = Astro.props.title ?? '';
   let liked = false;
   try { liked = localStorage.getItem(likeKey) === '1'; } catch {}
   renderLike(liked);
+  let likeFeedbackTimer: ReturnType<typeof setTimeout>;
   likeButtons.forEach((button) => button.addEventListener('click', () => {
     liked = !liked;
     try { localStorage.setItem(likeKey, liked ? '1' : '0'); } catch {}
     renderLike(liked);
+    clearTimeout(likeFeedbackTimer);
+    likeButtons.forEach((item) => item.toggleAttribute('data-like-feedback', liked));
+    likeFeedbackTimer = setTimeout(() => {
+      likeButtons.forEach((item) => item.removeAttribute('data-like-feedback'));
+    }, 600);
   }));
 
   const shareButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-article-share]')];
-  const setShareLabel = (label: string, feedback = false) => shareButtons.forEach((button) => {
-    const target = button.querySelector<HTMLElement>('[data-share-label]');
-    if (target) target.textContent = label;
-    button.toggleAttribute('data-feedback', feedback);
-  });
   shareButtons.forEach((button) => button.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(location.href);
-      setShareLabel('已复制', true);
-      setTimeout(() => setShareLabel('复制链接'), 1600);
+      shareButtons.forEach((item) => showCopyFeedback(item, true, '复制链接'));
     } catch {
-      setShareLabel('复制失败', true);
-      setTimeout(() => setShareLabel('复制链接'), 1600);
+      shareButtons.forEach((item) => showCopyFeedback(item, false, '复制链接'));
     }
   }));
 </script>
 
 <style>
   .toc { position: sticky; top: calc(var(--header-height) + 32px); align-self: start; max-height: calc(100vh - var(--header-height) - 64px); padding-left: 20px; overflow: auto; border-left: 1px solid var(--ring); }
+  .toc-rail, .toc-active-mark, .toc-reading-meta { display: none; }
+  .toc-outline { position: relative; }
+  .toc[data-reading-toc] { height: min(520px, calc(100svh - var(--header-height) - 80px)); padding-left: 0; overflow: visible; border-left: 0; }
+  .toc[data-reading-toc]:focus-visible { outline: 1px solid var(--color-focus-ring); outline-offset: var(--space-2); border-radius: var(--radius-md); }
+  .toc[data-reading-toc] .toc-panel { position: absolute; inset: 0; padding: var(--space-1) var(--space-1) var(--space-2) var(--space-6); overflow: auto; opacity: 0; transform: translateX(var(--space-2)); pointer-events: none; transition: opacity var(--duration-base) var(--ease-standard), transform var(--duration-slow) var(--ease-enter); }
+  .toc[data-toc-open='true'] .toc-panel { opacity: 1; transform: none; pointer-events: auto; }
+  .toc[data-reading-toc] .toc-rail { position: absolute; inset: var(--space-1) 0; display: block; pointer-events: none; transition: opacity var(--duration-base) var(--ease-standard); }
+  .toc[data-toc-open='true'] .toc-rail { opacity: 0; }
+  .toc-thread { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 12px 0; transition: transform var(--duration-slow) var(--ease-enter); }
+  .toc[data-toc-open='true'] .toc-thread { transform: scaleY(.2); }
+  .toc-thread-track, .toc-thread-progress { fill: none; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .toc-thread-track { stroke: var(--color-border); }
+  .toc-thread-progress { stroke: var(--color-accent); stroke-linecap: round; }
+  .toc-thread-node { fill: var(--color-icon); }
+  .toc-thread-node[data-current] { fill: var(--color-accent); }
+  .toc-reading-label { position: absolute; top: 0; left: 0; display: grid; gap: var(--space-1); width: calc(100% - 40px); color: var(--color-text-secondary); font-size: var(--text-label-12); line-height: 1.5; }
+  [data-reading-title] { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  [data-reading-progress] { color: var(--color-text-interactive); font-family: var(--font-mono); font-size: var(--text-caption-10); font-variant-numeric: tabular-nums; }
+  .toc[data-reading-toc] .toc-active-mark { position: absolute; top: 0; left: -12px; display: block; width: 2px; height: 18px; border-radius: var(--radius-sm); background: var(--color-accent); transition: translate var(--duration-base) var(--ease-standard), height var(--duration-base) var(--ease-standard); }
+  .toc[data-reading-toc] .toc-reading-meta { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+  .toc-reading-meta > svg { width: 100%; height: var(--space-3); fill: none; stroke: var(--color-border); stroke-width: 1; }
+  .toc-reading-meta p { display: flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--color-text-secondary); font-family: var(--font-mono); font-size: var(--text-label-12); font-variant-numeric: tabular-nums; }
+  .toc-progress-ring { width: var(--space-3); height: var(--space-3); border-radius: 50%; background: conic-gradient(var(--color-accent) var(--reading-progress, 0%), var(--color-border) 0); mask-image: radial-gradient(circle, transparent 48%, black 52%); }
+  .toc-progress-caption { font-family: var(--font-sans); font-size: var(--text-caption-10); }
+  .toc-reading-meta .toc-back-top { display: block; color: var(--color-text-secondary); font-size: var(--text-label-12); }
+  .toc-reading-meta .toc-back-top:hover { color: var(--color-text-interactive); }
+  .toc[data-reading-toc] .toc-actions { border-top: 0; margin-top: var(--space-4); padding-top: 0; }
   .toc-label { margin: 0 0 18px; color: var(--n-8); font-family: var(--font-mono); font-size: var(--text-label-12); font-weight: 600; letter-spacing: .08em; line-height: 1.5; }
   ol { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
   li { min-width: 0; }
@@ -135,6 +175,7 @@ const title = Astro.props.title ?? '';
   .toc-depth-3 { position: relative; margin-left: var(--space-3); }
   .toc-depth-3::before { position: absolute; top: .72em; left: 0; width: var(--space-2); height: 1px; background: var(--color-border); content: ''; }
   .toc-depth-3 a { grid-template-columns: minmax(0, 1fr); padding-left: var(--space-4); color: var(--color-text-secondary); font-size: var(--text-label-12); }
+  .toc-depth-3 a:hover, .toc-depth-3 a[aria-current] { color: var(--color-text-interactive); }
   .toc-actions { display: grid; justify-items: start; gap: 6px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--ring); }
   .toc-action { display: flex; width: fit-content; min-width: 34px; min-height: 34px; padding: 6px 8px; align-items: center; gap: 0; overflow: hidden; border: 0; border-radius: var(--radius-md); color: var(--n-8); background: transparent; font-family: var(--font-sans); font-size: var(--text-copy-13); line-height: var(--text-copy-13--line-height); cursor: pointer; transition: color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard); }
   .toc-action:hover { color: var(--n-10); background: var(--n-1); }
@@ -156,5 +197,10 @@ const title = Astro.props.title ?? '';
   .toc-actions-mobile .toc-action { width: auto; border: 1px solid var(--ring); background: var(--paper-raised); }
   @media (max-width: 980px) {
     .toc { display: none; }
+  }
+  @media print {
+    .toc[data-reading-toc] { height: auto; }
+    .toc[data-reading-toc] .toc-rail { display: none; }
+    .toc[data-reading-toc] .toc-panel { position: static; opacity: 1; overflow: visible; transform: none; }
   }
 </style>

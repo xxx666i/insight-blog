@@ -37,14 +37,14 @@ const totalEntries = posts.length + notes.length + projects.length;
           <img src={withBase(siteConfig.avatar)} alt={`${siteConfig.author} 的头像`} width="156" height="156" />
         </div>
 
-        <h1 id="hero-title" class="hero-title" data-enter style="--enter-index: 2">
-          <span class="hero-greeting"><span class="greeting-copy">Hi, I'm</span> <span class="hero-name">{siteConfig.author}</span><span class="wave" aria-hidden="true">👋</span></span>
-          <span class="hero-role"><span class="sr-only">Insight Blog — </span>A curious <span class="developer-label"><code>&lt;Developer/&gt;</code><span class="typing-caret" aria-hidden="true"></span></span></span>
+        <h1 id="hero-title" class="hero-title">
+          <span class="hero-greeting" data-enter style="--enter-index: 3"><span class="greeting-copy">Hi, I'm</span> <span class="hero-name">{siteConfig.author}</span><span class="wave" aria-hidden="true">👋</span></span>
+          <span class="hero-role" data-enter style="--enter-index: 5"><span class="sr-only">Insight Blog — </span>A curious <span class="developer-label"><code>&lt;Developer/&gt;</code><span class="typing-caret" aria-hidden="true"></span></span></span>
         </h1>
-        <p class="hero-subtitle" data-enter style="--enter-index: 3">{siteConfig.subtitle}</p>
+        <p class="hero-subtitle" data-enter style="--enter-index: 7">{siteConfig.subtitle}</p>
       </div>
 
-      <div class="hero-meta" data-enter style="--enter-index: 4">
+      <div class="hero-meta" data-enter style="--enter-index: 9">
         <blockquote>「 保持好奇，保留余白，也把每一次思考写下来。」</blockquote>
         <p class="hero-stats" aria-label="站点内容统计">
           <span>{posts.length} 篇文章</span>
@@ -76,7 +76,7 @@ const totalEntries = posts.length + notes.length + projects.length;
     </section>
 
     <div class="home-content page-shell">
-      <section class="home-section writing-section" id="recent-posts" data-enter style="--enter-index: 1">
+      <section class="home-section writing-section" id="recent-posts" data-reveal>
         <div class="section-heading">
           <div>
             <p class="section-kicker">RECENT WRITING</p>
@@ -91,7 +91,7 @@ const totalEntries = posts.length + notes.length + projects.length;
         </div>
       </section>
 
-      <section class="home-section notes-section" data-enter style="--enter-index: 2">
+      <section class="home-section notes-section" data-reveal style="--enter-index: 1">
         <div class="section-heading">
           <div>
             <p class="section-kicker">MUSINGS</p>
@@ -102,8 +102,8 @@ const totalEntries = posts.length + notes.length + projects.length;
         {!notes.length && <p class="empty-state">随记正在整理中。</p>}
       </section>
 
-      <section class="home-section projects-section" data-enter style="--enter-index: 3">
-        <div class="section-heading">
+      <section class="home-section projects-section">
+        <div class="section-heading" data-reveal>
           <div>
             <p class="section-kicker">SELECTED WORK</p>
             <h2 class="section-title"><a href={withBase('projects/')}>当前项目</a></h2>

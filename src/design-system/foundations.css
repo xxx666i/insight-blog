@@ -147,7 +147,19 @@ summary {
 
 [data-enter] {
   animation: quiet-enter var(--duration-slow) var(--ease-enter) both;
-  animation-delay: calc(var(--enter-index, 0) * 70ms);
+  animation-delay: calc(var(--enter-index, 0) * var(--duration-stagger));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal-state='pending'] {
+    opacity: 0;
+    translate: 0 var(--space-3);
+  }
+
+  [data-reveal-state='visible'] {
+    animation: quiet-enter var(--duration-slow) var(--ease-enter) backwards;
+    animation-delay: calc(min(var(--enter-index, 0), 3) * var(--duration-stagger));
+  }
 }
 
 @media (max-width: 680px) {
@@ -157,6 +169,12 @@ summary {
 }
 
 @media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    animation: none !important;
+  }
+
   html {
     --root-font-size: 12px;
   }
@@ -172,6 +190,7 @@ summary {
   *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }

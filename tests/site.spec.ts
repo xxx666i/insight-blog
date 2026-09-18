@@ -309,6 +309,7 @@ test('长文章提供目录、代码操作和扩展内容', async ({ page, isMob
     expect(Math.abs((alignment.contentWidth ?? 0) - (alignment.paginationWidth ?? 0))).toBeLessThan(1);
     expect(Math.abs((alignment.contentX ?? 0) - (alignment.codeLicenseX ?? 0))).toBeLessThan(1);
   }
+  if (!isMobile) await page.locator('.toc').hover();
   const likeButton = page.getByRole('button', { name: '点赞本文' });
   await expect(likeButton).toBeVisible();
   const likeLabel = likeButton.locator('.action-label');
